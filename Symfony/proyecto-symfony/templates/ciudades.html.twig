@@ -1,0 +1,18 @@
+{# templates/ciudades.html.twig #}
+{# @author Carlos Vico #}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ciudades</title>
+</head>
+<body>
+    <ul>
+        {# Iteramos el array recibido del controlador #}
+        {% for ciudad in ciudades %}
+            <li>{{ ciudad }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

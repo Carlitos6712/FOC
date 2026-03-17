@@ -1,0 +1,19 @@
+{# templates/libros/listar.html.twig #}
+{# @author Carlos Vico #}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Libros</title>
+</head>
+<body>
+    <h1>Listado de Libros</h1>
+
+    {% for libro in libros %}
+        <p>{{ libro.titulo }} - {{ libro.autor }} - {{ libro.precio }}€</p>
+    {% else %}
+        <p>No hay libros en la base de datos.</p>
+    {% endfor %}
+</body>
+</html>

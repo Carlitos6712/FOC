@@ -1,0 +1,60 @@
+{# templates/peliculas/detalle.html.twig #}
+{# @author Carlos Vico #}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ pelicula.titulo }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 40px 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #222; margin-bottom: 24px; border-bottom: 3px solid #222; padding-bottom: 12px; }
+        .card { background: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; padding: 20px; }
+        .field { display: flex; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .field:last-child { border-bottom: none; }
+        .label { font-weight: bold; color: #555; width: 100px; flex-shrink: 0; }
+        .value { color: #222; }
+        .actions { margin-top: 24px; display: flex; gap: 10px; }
+        .btn { display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 14px; color: white; }
+        .btn-back { background: #222; }
+        .btn-back:hover { background: #444; }
+        .btn-update { background: #1565c0; }
+        .btn-update:hover { background: #1976d2; }
+        .btn-delete { background: #b71c1c; }
+        .btn-delete:hover { background: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 {{ pelicula.titulo }}</h1>
+
+        <div class="card">
+            {# Mostramos todos los campos de la entidad Pelicula #}
+            <div class="field">
+                <span class="label">ID</span>
+                <span class="value">{{ pelicula.id }}</span>
+            </div>
+            <div class="field">
+                <span class="label">Título</span>
+                <span class="value">{{ pelicula.titulo }}</span>
+            </div>
+            <div class="field">
+                <span class="label">Director</span>
+                <span class="value">{{ pelicula.director }}</span>
+            </div>
+            <div class="field">
+                <span class="label">Año</span>
+                <span class="value">{{ pelicula.anyo }}</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a class="btn btn-back" href="/peliculas">← Volver</a>
+            <a class="btn btn-update" href="/pelicula/actualizar/1">✏️ Actualizar título</a>
+            <a class="btn btn-delete" href="/pelicula/eliminar/1">🗑️ Eliminar</a>
+        </div>
+    </div>
+</body>
+</html>
