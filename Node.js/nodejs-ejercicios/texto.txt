@@ -1,0 +1,2 @@
+Hola! Este es el contenido del archivo texto.txt
+Estoy aprendiendo Node.js con Carlos Vico.
