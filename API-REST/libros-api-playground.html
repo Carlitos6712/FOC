@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Libros — Playground</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:     #0f0e0c;
+    --paper:   #f5f0e8;
+    --cream:   #ede7d6;
+    --rust:    #c0392b;
+    --gold:    #b8860b;
+    --sage:    #2d6a4f;
+    --sky:     #1a4a6b;
+    --light:   #faf7f2;
+    --border:  #c8bfaa;
+    --mono:    'JetBrains Mono', monospace;
+    --serif:   'Playfair Display', serif;
+    --sans:    'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--light);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.5rem 3rem;
+    border-bottom: 4px solid var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  header h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  header h1 span { color: var(--gold); }
+  .header-meta {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: #aaa;
+    text-align: right;
+    line-height: 1.7;
+  }
+  .header-meta strong { color: var(--gold); }
+
+  /* ── LAYOUT ── */
+  main {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: calc(100vh - 130px);
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: var(--cream);
+    border-right: 2px solid var(--border);
+    padding: 1.5rem 1rem;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 130px);
+  }
+  aside h2 {
+    font-family: var(--serif);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .5rem;
+    margin-bottom: 1rem;
+  }
+
+  .endpoint-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: .6rem .8rem;
+    border-radius: 4px;
+    margin-bottom: .3rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--ink);
+    transition: background .15s, transform .1s;
+    border-left: 3px solid transparent;
+  }
+  .endpoint-btn:hover { background: var(--paper); transform: translateX(2px); }
+  .endpoint-btn.active { background: var(--paper); border-left-color: var(--gold); }
+  .method-badge {
+    font-weight: 600;
+    font-size: .6rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 42px;
+    text-align: center;
+  }
+  .GET    { background: #d4edda; color: var(--sage); }
+  .POST   { background: #cce5ff; color: var(--sky); }
+  .PUT    { background: #fff3cd; color: var(--gold); }
+  .DELETE { background: #f8d7da; color: var(--rust); }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: .6rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 1.2rem 0 .4rem .3rem;
+  }
+
+  /* ── CONTENT ── */
+  section.content {
+    padding: 2rem 2.5rem;
+    overflow-y: auto;
+  }
+
+  .panel {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .panel-header {
+    background: var(--cream);
+    padding: .8rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-family: var(--mono);
+    font-size: .8rem;
+    font-weight: 600;
+  }
+  .panel-body { padding: 1.2rem; }
+
+  /* ── ROUTE DISPLAY ── */
+  .route-display {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin-bottom: 1.5rem;
+  }
+  .route-display .method-badge {
+    font-size: .75rem;
+    padding: 5px 10px;
+  }
+  .route-path {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ── FORM ELEMENTS ── */
+  label {
+    display: block;
+    font-size: .75rem;
+    font-weight: 500;
+    margin-bottom: .3rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-family: var(--mono);
+  }
+  input, textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    padding: .5rem .75rem;
+    font-family: var(--mono);
+    font-size: .82rem;
+    background: var(--light);
+    color: var(--ink);
+    margin-bottom: .8rem;
+    transition: border-color .2s;
+    outline: none;
+  }
+  input:focus, textarea:focus { border-color: var(--gold); }
+  textarea { min-height: 100px; resize: vertical; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 600;
+    padding: .55rem 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform .1s, opacity .2s;
+    letter-spacing: .5px;
+  }
+  .btn:hover { opacity: .85; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary   { background: var(--ink); color: var(--paper); }
+  .btn-success   { background: var(--sage); color: white; }
+  .btn-danger    { background: var(--rust); color: white; }
+  .btn-warning   { background: var(--gold); color: white; }
+
+  /* ── RESPONSE AREA ── */
+  .response-area {
+    font-family: var(--mono);
+    font-size: .78rem;
+    background: #1a1a1a;
+    color: #e8e8e8;
+    border-radius: 6px;
+    padding: 1rem;
+    min-height: 120px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    line-height: 1.6;
+    position: relative;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: .65rem;
+    font-weight: 600;
+    font-family: var(--mono);
+    margin-bottom: .5rem;
+  }
+  .status-2xx { background: #2d6a4f; color: white; }
+  .status-4xx { background: var(--rust); color: white; }
+  .status-5xx { background: #6b1a1a; color: white; }
+
+  .json-key   { color: #93c5fd; }
+  .json-str   { color: #86efac; }
+  .json-num   { color: #fbbf24; }
+  .json-bool  { color: #f472b6; }
+  .json-null  { color: #9ca3af; }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: .8rem 1rem;
+    font-family: var(--mono);
+    font-size: .73rem;
+    color: #ccc;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .code-comment { color: #6a9955; }
+  .code-kw      { color: #569cd6; }
+  .code-str     { color: #ce9178; }
+  .code-fn      { color: #dcdcaa; }
+  .code-num     { color: #b5cea8; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1rem; }
+  .tab {
+    padding: .5rem 1rem;
+    font-family: var(--mono);
+    font-size: .72rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: #888;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s;
+  }
+  .tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── RULES TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .78rem;
+  }
+  th {
+    background: var(--cream);
+    font-family: var(--mono);
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: .5rem .8rem;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  td {
+    padding: .5rem .8rem;
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: .73rem;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--light); }
+
+  /* ── ALERT ── */
+  .alert {
+    padding: .75rem 1rem;
+    border-radius: 5px;
+    font-size: .8rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+  }
+  .alert-info    { background: #e8f4fd; border-color: var(--sky); color: var(--sky); }
+  .alert-warning { background: #fffbe6; border-color: var(--gold); color: #7a6000; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-start; }
+    aside h2, .section-label { display: none; }
+    header { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📚 API <span>Libros</span></h1>
+    <p style="font-size:.8rem;color:#aaa;margin-top:.3rem;font-family:var(--mono)">REST · JSON · Express.js</p>
+  </div>
+  <div class="header-meta">
+    <strong>@author</strong> Carlos Vico<br>
+    Base URL: <strong>http://localhost:3000</strong><br>
+    Nivel: <strong>Medio</strong>
+  </div>
+</header>
+
+<main>
+  <!-- SIDEBAR -->
+  <aside>
+    <h2>Endpoints</h2>
+    <div class="section-label">Colección</div>
+    <button class="endpoint-btn active" onclick="showPanel('get-all')">
+      <span class="method-badge GET">GET</span>/libros
+    </button>
+    <button class="endpoint-btn" onclick="showPanel('get-filter')">
+      <span class="method-badge GET">GET</span>/libros?autor=
+    </button>
+    <button class="endpoint-btn" onclick="showPanel('post')">
+      <span class="method-badge POST">POST</span>/libros
+    </button>
+    <div class="section-label">Ítem</div>
+    <button class="endpoint-btn" onclick="showPanel('get-one')">
+      <span class="method-badge GET">GET</span>/libros/{id}
+    </button>
+    <button class="endpoint-btn" onclick="showPanel('put')">
+      <span class="method-badge PUT">PUT</span>/libros/{id}
+    </button>
+    <button class="endpoint-btn" onclick="showPanel('delete')">
+      <span class="method-badge DELETE">DELETE</span>/libros/{id}
+    </button>
+    <div class="section-label">Referencias</div>
+    <button class="endpoint-btn" onclick="showPanel('schema')">
+      <span class="method-badge GET" style="background:#eee;color:#555">📋</span>Schema
+    </button>
+    <button class="endpoint-btn" onclick="showPanel('codigo')">
+      <span class="method-badge GET" style="background:#eee;color:#555">💻</span>Código
+    </button>
+  </aside>
+
+  <!-- CONTENT -->
+  <section class="content">
+
+    <!-- ── GET ALL ── -->
+    <div id="panel-get-all" class="panel-group">
+      <div class="route-display">
+        <span class="method-badge GET" style="font-size:.75rem;padding:5px 10px">GET</span>
+        <span class="route-path">/libros</span>
+      </div>
+      <div class="alert alert-info">Lista todos los libros de la colección.</div>
+      <div class="panel">
+        <div class="panel-header">▶ Simular petición</div>
+        <div class="panel-body">
+          <button class="btn btn-success" onclick="mockRequest('GET', '/libros', null, 'res-get-all', 200, mockGetAll)">
+            Ejecutar GET /libros
+          </button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">📨 Respuesta</div>
+        <div class="panel-body">
+          <div id="res-get-all" class="response-area">// Pulsa "Ejecutar" para ver la respuesta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GET FILTER ── -->
+    <div id="panel-get-filter" class="panel-group" style="display:none">
+      <div class="route-display">
+        <span class="method-badge GET" style="font-size:.75rem;padding:5px 10px">GET</span>
+        <span class="route-path">/libros?autor={valor}</span>
+      </div>
+      <div class="alert alert-info">Filtra libros por autor (búsqueda parcial, no distingue mayúsculas).</div>
+      <div class="panel">
+        <div class="panel-header">▶ Simular petición</div>
+        <div class="panel-body">
+          <label>Valor del filtro ?autor=</label>
+          <input type="text" id="filter-autor" placeholder="Cervantes" value="Cervantes">
+          <button class="btn btn-success" onclick="mockFilter()">
+            Ejecutar búsqueda
+          </button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">📨 Respuesta</div>
+        <div class="panel-body">
+          <div id="res-get-filter" class="response-area">// Pulsa "Ejecutar" para ver la respuesta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── POST ── -->
+    <div id="panel-post" class="panel-group" style="display:none">
+      <div class="route-display">
+        <span class="method-badge POST" style="font-size:.75rem;padding:5px 10px">POST</span>
+        <span class="route-path">/libros</span>
+      </div>
+      <div class="alert alert-info">Crea un nuevo libro. Devuelve <code>201 Created</code> con el libro creado.</div>
+      <div class="panel">
+        <div class="panel-header">▶ Simular petición</div>
+        <div class="panel-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this,'post-form')">Formulario</button>
+            <button class="tab" onclick="switchTab(this,'post-error-empty')">❌ Título vacío</button>
+            <button class="tab" onclick="switchTab(this,'post-error-year')">❌ Año inválido</button>
+          </div>
+          <div id="post-form" class="tab-content active">
+            <label>Título</label>
+            <input type="text" id="post-titulo" placeholder="El Aleph">
+            <div class="form-row">
+              <div><label>Autor</label><input type="text" id="post-autor" placeholder="Borges"></div>
+              <div><label>Año</label><input type="number" id="post-anio" placeholder="1949"></div>
+            </div>
+            <button class="btn btn-primary" onclick="mockPost()">Enviar POST</button>
+          </div>
+          <div id="post-error-empty" class="tab-content">
+            <div class="alert alert-warning">⚠ Prueba de validación: título vacío → <strong>422 Unprocessable Entity</strong></div>
+            <button class="btn btn-danger" onclick="mockRequest('POST','/libros',{titulo:'',autor:'Kafka',anio:1925},'res-post',422,mockPostErrorEmpty)">
+              Enviar con título vacío
+            </button>
+          </div>
+          <div id="post-error-year" class="tab-content">
+            <div class="alert alert-warning">⚠ Prueba de validación: año ≤ 1500 → <strong>422 Unprocessable Entity</strong></div>
+            <button class="btn btn-danger" onclick="mockRequest('POST','/libros',{titulo:'Iliada',autor:'Homero',anio:700},'res-post',422,mockPostErrorYear)">
+              Enviar con año = 700
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">📨 Respuesta</div>
+        <div class="panel-body">
+          <div id="res-post" class="response-area">// Pulsa "Ejecutar" para ver la respuesta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GET ONE ── -->
+    <div id="panel-get-one" class="panel-group" style="display:none">
+      <div class="route-display">
+        <span class="method-badge GET" style="font-size:.75rem;padding:5px 10px">GET</span>
+        <span class="route-path">/libros/{id}</span>
+      </div>
+      <div class="alert alert-info">Obtiene un libro por su ID. Devuelve <code>404</code> si no existe.</div>
+      <div class="panel">
+        <div class="panel-header">▶ Simular petición</div>
+        <div class="panel-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this,'getone-found')">✅ Encontrado</button>
+            <button class="tab" onclick="switchTab(this,'getone-404')">❌ No encontrado</button>
+          </div>
+          <div id="getone-found" class="tab-content active">
+            <label>ID del libro</label>
+            <input type="number" id="getone-id" value="1" min="1">
+            <button class="btn btn-success" onclick="mockGetOne()">Ejecutar GET</button>
+          </div>
+          <div id="getone-404" class="tab-content">
+            <div class="alert alert-warning">⚠ ID inexistente → <strong>404 Not Found</strong></div>
+            <button class="btn btn-danger" onclick="mockRequest('GET','/libros/9999',null,'res-get-one',404,mockGetOneNotFound)">
+              GET /libros/9999
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">📨 Respuesta</div>
+        <div class="panel-body">
+          <div id="res-get-one" class="response-area">// Pulsa "Ejecutar" para ver la respuesta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PUT ── -->
+    <div id="panel-put" class="panel-group" style="display:none">
+      <div class="route-display">
+        <span class="method-badge PUT" style="font-size:.75rem;padding:5px 10px">PUT</span>
+        <span class="route-path">/libros/{id}</span>
+      </div>
+      <div class="alert alert-info">Actualiza completamente un libro. Todos los campos son obligatorios.</div>
+      <div class="panel">
+        <div class="panel-header">▶ Simular petición</div>
+        <div class="panel-body">
+          <label>ID a actualizar</label>
+          <input type="number" id="put-id" value="1" min="1">
+          <label>Título</label>
+          <input type="text" id="put-titulo" placeholder="Don Quijote (Edición revisada)">
+          <div class="form-row">
+            <div><label>Autor</label><input type="text" id="put-autor" placeholder="Cervantes"></div>
+            <div><label>Año</label><input type="number" id="put-anio" placeholder="1615"></div>
+          </div>
+          <button class="btn btn-warning" onclick="mockPut()">Enviar PUT</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">📨 Respuesta</div>
+        <div class="panel-body">
+          <div id="res-put" class="response-area">// Pulsa "Ejecutar" para ver la respuesta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DELETE ── -->
+    <div id="panel-delete" class="panel-group" style="display:none">
+      <div class="route-display">
+        <span class="method-badge DELETE" style="font-size:.75rem;padding:5px 10px">DELETE</span>
+        <span class="route-path">/libros/{id}</span>
+      </div>
+      <div class="alert alert-info">Elimina un libro. Devuelve el libro eliminado en <code>data</code>.</div>
+      <div class="panel">
+        <div class="panel-header">▶ Simular petición</div>
+        <div class="panel-body">
+          <label>ID a eliminar</label>
+          <input type="number" id="delete-id" value="2" min="1">
+          <button class="btn btn-danger" onclick="mockDelete()">Enviar DELETE</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">📨 Respuesta</div>
+        <div class="panel-body">
+          <div id="res-delete" class="response-area">// Pulsa "Ejecutar" para ver la respuesta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCHEMA ── -->
+    <div id="panel-schema" class="panel-group" style="display:none">
+      <div class="route-display" style="align-items:center">
+        <span style="font-size:1.5rem">📋</span>
+        <span class="route-path">Schema & Reglas de negocio</span>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Modelo de datos — Libro</div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Regla</th></tr></thead>
+            <tbody>
+              <tr><td>id</td><td>number</td><td>Auto</td><td>Autoincremental, no enviar en POST</td></tr>
+              <tr><td>titulo</td><td>string</td><td>✅</td><td>No puede ser vacío ni solo espacios</td></tr>
+              <tr><td>autor</td><td>string</td><td>✅</td><td>No puede ser vacío</td></tr>
+              <tr><td>anio</td><td>number</td><td>✅</td><td>Entero mayor que 1500</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Respuesta JSON estándar</div>
+        <div class="panel-body">
+          <div class="code-block"><span class="code-comment">// Éxito</span>
+{
+  <span class="code-str">"success"</span>: <span class="code-kw">true</span>,
+  <span class="code-str">"data"</span>: { ... },
+  <span class="code-str">"message"</span>: <span class="code-str">"Libro creado correctamente."</span>
+}
+
+<span class="code-comment">// Error de validación</span>
+{
+  <span class="code-str">"success"</span>: <span class="code-kw">false</span>,
+  <span class="code-str">"data"</span>: { <span class="code-str">"errors"</span>: [<span class="code-str">"..."</span>] },
+  <span class="code-str">"message"</span>: <span class="code-str">"Validación fallida."</span>
+}</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Tabla de códigos HTTP</div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>Código</th><th>Método</th><th>Cuándo</th></tr></thead>
+            <tbody>
+              <tr><td>200 OK</td><td>GET, PUT, DELETE</td><td>Operación correcta</td></tr>
+              <tr><td>201 Created</td><td>POST</td><td>Recurso creado</td></tr>
+              <tr><td>404 Not Found</td><td>GET, PUT, DELETE</td><td>ID no existe</td></tr>
+              <tr><td>422 Unprocessable</td><td>POST, PUT</td><td>Validación fallida</td></tr>
+              <tr><td>500 Server Error</td><td>Todos</td><td>Error interno</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CÓDIGO ── -->
+    <div id="panel-codigo" class="panel-group" style="display:none">
+      <div class="route-display" style="align-items:center">
+        <span style="font-size:1.5rem">💻</span>
+        <span class="route-path">Fragmentos clave del código</span>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Helper: respuesta estándar</div>
+        <div class="panel-body">
+          <div class="code-block"><span class="code-comment">/** Genera respuesta JSON {success, data, message} */</span>
+<span class="code-kw">const</span> <span class="code-fn">jsonResponse</span> = (success, data, message) =>
+  ({ success, data, message });</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Helper: validación centralizada</div>
+        <div class="panel-body">
+          <div class="code-block"><span class="code-kw">const</span> <span class="code-fn">validarLibro</span> = ({ titulo, autor, anio }) => {
+  <span class="code-kw">const</span> errors = [];
+  <span class="code-kw">if</span> (!titulo || String(titulo).trim() === <span class="code-str">""</span>)
+    errors.push(<span class="code-str">"El título no puede estar vacío."</span>);
+  <span class="code-kw">if</span> (!autor || String(autor).trim() === <span class="code-str">""</span>)
+    errors.push(<span class="code-str">"El autor es obligatorio."</span>);
+  <span class="code-kw">if</span> (!Number.isInteger(anio) || anio <= <span class="code-num">1500</span>)
+    errors.push(<span class="code-str">"El año debe ser > 1500."</span>);
+  <span class="code-kw">return</span> { valid: errors.length === <span class="code-num">0</span>, errors };
+};</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Ruta: GET /libros con filtro</div>
+        <div class="panel-body">
+          <div class="code-block">app.<span class="code-fn">get</span>(<span class="code-str">"/libros"</span>, (req, res) => {
+  <span class="code-kw">const</span> { autor } = req.query;
+  <span class="code-kw">const</span> resultado = autor
+    ? libros.<span class="code-fn">filter</span>(l =>
+        l.autor.<span class="code-fn">toLowerCase</span>()
+               .<span class="code-fn">includes</span>(autor.<span class="code-fn">toLowerCase</span>()))
+    : libros;
+  res.<span class="code-fn">status</span>(<span class="code-num">200</span>).<span class="code-fn">json</span>(<span class="code-fn">jsonResponse</span>(
+    <span class="code-kw">true</span>, resultado,
+    <span class="code-str">`${resultado.length} libro(s) encontrado(s).`</span>
+  ));
+});</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<script>
+// ────────────────────────────────────
+// Estado simulado (mock en memoria)
+// ────────────────────────────────────
+let mockLibros = [
+  { id: 1, titulo: "Don Quijote de la Mancha", autor: "Cervantes",      anio: 1605 },
+  { id: 2, titulo: "Cien años de soledad",    autor: "García Márquez", anio: 1967 },
+  { id: 3, titulo: "La Celestina",            autor: "Rojas",          anio: 1501 },
+];
+let mockNextId = 4;
+
+// ────────────────────────────────────
+// Navegación de paneles
+// ────────────────────────────────────
+function showPanel(id) {
+  document.querySelectorAll('.panel-group').forEach(p => p.style.display = 'none');
+  document.getElementById('panel-' + id).style.display = '';
+  document.querySelectorAll('.endpoint-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function switchTab(btn, tabId) {
+  const parent = btn.closest('.panel-body');
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  parent.querySelector('#' + tabId).classList.add('active');
+}
+
+// ────────────────────────────────────
+// Renderizado de respuesta
+// ────────────────────────────────────
+function renderResponse(elId, status, data) {
+  const el = document.getElementById(elId);
+  const statusClass = status < 300 ? 'status-2xx' : (status < 500 ? 'status-4xx' : 'status-5xx');
+  const label = document.createElement('div');
+  label.innerHTML = `<span class="status-badge ${statusClass}">HTTP ${status}</span>`;
+  el.innerHTML = '';
+  el.appendChild(label);
+  const pre = document.createElement('div');
+  pre.innerHTML = colorizeJson(JSON.stringify(data, null, 2));
+  el.appendChild(pre);
+}
+
+function colorizeJson(str) {
+  return str
+    .replace(/("[\w]+")\s*:/g, '<span class="json-key">$1</span>:')
+    .replace(/:\s*(".*?")/g, ': <span class="json-str">$1</span>')
+    .replace(/:\s*(\d+)/g, ': <span class="json-num">$1</span>')
+    .replace(/:\s*(true|false)/g, ': <span class="json-bool">$1</span>')
+    .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>');
+}
+
+// ────────────────────────────────────
+// Mock handlers
+// ────────────────────────────────────
+function mockRequest(method, path, body, resId, status, fn) {
+  const result = fn(body);
+  renderResponse(resId, status, result);
+}
+
+const mockGetAll    = () => ({ success: true, data: mockLibros, message: `${mockLibros.length} libro(s) encontrado(s).` });
+const mockGetOneNotFound = () => ({ success: false, data: null, message: "No se encontró ningún libro con id=9999." });
+const mockPostErrorEmpty = () => ({ success: false, data: { errors: ["El campo 'titulo' es obligatorio y no puede estar vacío."] }, message: "Validación fallida." });
+const mockPostErrorYear  = () => ({ success: false, data: { errors: ["El campo 'anio' debe ser un número entero mayor que 1500."] }, message: "Validación fallida." });
+
+function mockFilter() {
+  const autor = document.getElementById('filter-autor').value;
+  const result = mockLibros.filter(l => l.autor.toLowerCase().includes(autor.toLowerCase()));
+  renderResponse('res-get-filter', 200, { success: true, data: result, message: `${result.length} libro(s) encontrado(s).` });
+}
+
+function mockGetOne() {
+  const id = parseInt(document.getElementById('getone-id').value);
+  const libro = mockLibros.find(l => l.id === id);
+  if (!libro) {
+    renderResponse('res-get-one', 404, { success: false, data: null, message: `No se encontró ningún libro con id=${id}.` });
+  } else {
+    renderResponse('res-get-one', 200, { success: true, data: libro, message: "Libro encontrado." });
+  }
+}
+
+function mockPost() {
+  const titulo = document.getElementById('post-titulo').value;
+  const autor  = document.getElementById('post-autor').value;
+  const anio   = parseInt(document.getElementById('post-anio').value);
+  const errors = [];
+  if (!titulo || titulo.trim() === '')  errors.push("El campo 'titulo' es obligatorio y no puede estar vacío.");
+  if (!autor  || autor.trim()  === '')  errors.push("El campo 'autor' es obligatorio.");
+  if (!anio || !Number.isInteger(anio) || anio <= 1500) errors.push("El campo 'anio' debe ser un número entero mayor que 1500.");
+  if (errors.length) {
+    renderResponse('res-post', 422, { success: false, data: { errors }, message: "Validación fallida." });
+    return;
+  }
+  const nuevoLibro = { id: mockNextId++, titulo: titulo.trim(), autor: autor.trim(), anio };
+  mockLibros.push(nuevoLibro);
+  renderResponse('res-post', 201, { success: true, data: nuevoLibro, message: "Libro creado correctamente." });
+}
+
+function mockPut() {
+  const id     = parseInt(document.getElementById('put-id').value);
+  const titulo = document.getElementById('put-titulo').value;
+  const autor  = document.getElementById('put-autor').value;
+  const anio   = parseInt(document.getElementById('put-anio').value);
+  const index  = mockLibros.findIndex(l => l.id === id);
+  if (index === -1) {
+    renderResponse('res-put', 404, { success: false, data: null, message: `No se encontró ningún libro con id=${id}.` });
+    return;
+  }
+  const errors = [];
+  if (!titulo || titulo.trim() === '')  errors.push("El campo 'titulo' es obligatorio y no puede estar vacío.");
+  if (!autor  || autor.trim()  === '')  errors.push("El campo 'autor' es obligatorio.");
+  if (!anio || !Number.isInteger(anio) || anio <= 1500) errors.push("El campo 'anio' debe ser un número entero mayor que 1500.");
+  if (errors.length) {
+    renderResponse('res-put', 422, { success: false, data: { errors }, message: "Validación fallida." });
+    return;
+  }
+  mockLibros[index] = { id, titulo: titulo.trim(), autor: autor.trim(), anio };
+  renderResponse('res-put', 200, { success: true, data: mockLibros[index], message: "Libro actualizado correctamente." });
+}
+
+function mockDelete() {
+  const id    = parseInt(document.getElementById('delete-id').value);
+  const index = mockLibros.findIndex(l => l.id === id);
+  if (index === -1) {
+    renderResponse('res-delete', 404, { success: false, data: null, message: `No se encontró ningún libro con id=${id}.` });
+    return;
+  }
+  const [eliminado] = mockLibros.splice(index, 1);
+  renderResponse('res-delete', 200, { success: true, data: eliminado, message: "Libro eliminado correctamente." });
+}
+</script>
+</body>
+</html>
