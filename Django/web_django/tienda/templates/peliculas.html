@@ -1,0 +1,16 @@
+<!-- Ejercicio final: Lista de películas -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Películas</title>
+</head>
+<body>
+    <h2>Lista de películas</h2>
+    {% for pelicula in peliculas %}
+        <p>{{ pelicula.titulo }} - {{ pelicula.director }} - {{ pelicula.anio }}</p>
+    {% empty %}
+        <p>No hay películas insertadas.</p>
+    {% endfor %}
+</body>
+</html>
