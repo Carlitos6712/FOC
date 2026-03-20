@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tarea 3 – Reloj Digital</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f4f8; }
+    h1   { color: #2d3748; }
+    button {
+      margin-top: 1rem;
+      padding: .6rem 1.4rem;
+      background: #3182ce;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #2b6cb0; }
+  </style>
+</head>
+<body>
+
+  <h1>Reloj digital</h1>
+  <hr />
+  <p>Reloj implementado por: Carlos Vico García</p>
+
+  <!--
+    RA3_f – Botón que abre la ventana emergente con el reloj.
+    El evento se asocia desde script.js (addEventListener),
+    nunca con atributo onclick en el HTML.
+  -->
+  <button id="btn-hora">Dame la hora</button>
+
+  <script src="tarea3.js"></script>
+</body>
+</html>

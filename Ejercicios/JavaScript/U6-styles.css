@@ -1,0 +1,59 @@
+/* styles.css – Estilos de la Tarea 6 | Carlos Vico */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  color: #2d3748;
+  background: #f7fafc;
+}
+
+h1 {
+  color: #2b6cb0;
+  margin-bottom: .5rem;
+}
+
+hr {
+  border: none;
+  border-top: 2px solid #bee3f8;
+  margin: .75rem 0 1rem;
+}
+
+div p {
+  background: #ebf8ff;
+  border-left: 4px solid #3182ce;
+  padding: .6rem 1rem;
+  border-radius: 0 6px 6px 0;
+}
+
+button {
+  padding: .55rem 1.2rem;
+  background: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+button:hover { background: #2b6cb0; }
+
+a {
+  display: inline-block;
+  margin-top: .5rem;
+  color: #3182ce;
+  text-decoration: none;
+  font-weight: bold;
+}
+a:hover { text-decoration: underline; }
+
+footer {
+  margin-top: 3rem;
+  padding-top: .75rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: .85rem;
+  color: #718096;
+}

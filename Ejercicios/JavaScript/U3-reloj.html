@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reloj Digital</title>
+  <style>
+    /* Estilo del reloj: fondo oscuro y dígitos tipo LCD */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #0d0d1a;
+      font-family: "Courier New", monospace;
+    }
+
+    h2 { color: #a0aec0; margin-bottom: 1.5rem; letter-spacing: 2px; }
+
+    /* Pantalla del reloj */
+    #pantalla-reloj {
+      font-size: 3.5rem;
+      font-weight: bold;
+      color: #00ff88;
+      /* Efecto de brillo tipo LED */
+      text-shadow: 0 0 10px #00ff88, 0 0 30px #00cc66;
+      letter-spacing: 6px;
+      background: #111;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      border: 2px solid #1a3a2a;
+      min-width: 260px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 2rem;
+      padding: .6rem 1.6rem;
+      background: #e53e3e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #c53030; }
+  </style>
+</head>
+<body>
+
+  <h2>⏱ Reloj Digital</h2>
+
+  <!-- RA3_d – El contenido de la hora se genera dinámicamente con JS -->
+  <div id="pantalla-reloj">00:00:00</div>
+
+  <!-- RA3_f – Botón para cerrar la ventana emergente -->
+  <button id="btn-cerrar">Cerrar</button>
+
+  <script src="reloj.js"></script>
+</body>
+</html>

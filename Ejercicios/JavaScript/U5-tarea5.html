@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tarea 5 – Validación de Formulario</title>
+  <link rel="stylesheet" href="tarea5.css" />
+</head>
+<body>
+
+  <div class="card">
+    <h1>Iniciar sesión</h1>
+
+    <!--
+      RA5_d – El evento de validación (submit) se asocia desde tarea5.js
+      mediante addEventListener, nunca con atributos HTML como onsubmit.
+    -->
+    <form id="form-login" novalidate>
+
+      <div class="campo">
+        <label for="usuario">Usuario</label>
+        <input
+          type="text"
+          id="usuario"
+          name="usuario"
+          placeholder="Entre 3 y 12 letras minúsculas"
+          autocomplete="username"
+        />
+        <!-- Zona donde se inyecta el mensaje de error del usuario -->
+        <span class="error" id="error-usuario" aria-live="polite"></span>
+        <span class="sugerencia" id="sugerencia-usuario"></span>
+      </div>
+
+      <div class="campo">
+        <label for="contrasena">Contraseña</label>
+        <input
+          type="password"
+          id="contrasena"
+          name="contrasena"
+          placeholder="Ej: A.carbot, F,as14dg"
+          autocomplete="current-password"
+        />
+        <!-- Zona donde se inyecta el mensaje de error de la contraseña -->
+        <span class="error" id="error-contrasena" aria-live="polite"></span>
+        <span class="sugerencia" id="sugerencia-contrasena"></span>
+      </div>
+
+      <button type="submit">Entrar</button>
+
+    </form>
+
+    <!-- Mensaje de éxito cuando todo es válido -->
+    <p class="exito" id="mensaje-exito" hidden>✅ Credenciales válidas. Acceso concedido.</p>
+  </div>
+
+  <script src="tarea5.js"></script>
+</body>
+</html>

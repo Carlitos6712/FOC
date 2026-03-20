@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tarea 7 – AJAX: XML y JSON</title>
+  <!-- jQuery desde CDN para RA7_i -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 750px; margin: 2rem auto;
+           padding: 0 1.5rem; background: #f7fafc; color: #2d3748; }
+    h2   { color: #2b6cb0; margin-top: 2rem; }
+    button {
+      padding: .55rem 1.2rem; background: #3182ce; color: white;
+      border: none; border-radius: 6px; font-size: .95rem;
+      cursor: pointer; margin: .5rem .4rem .5rem 0;
+    }
+    button:hover { background: #2b6cb0; }
+    select, ul { margin-top: .75rem; }
+    select { min-width: 220px; padding: .4rem; border-radius: 5px;
+             border: 1.5px solid #cbd5e0; }
+    ul { list-style: disc; padding-left: 1.5rem; }
+    li { margin: .25rem 0; font-size: .9rem; }
+    .seccion { background: white; border-radius: 8px; padding: 1.2rem;
+               box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <h1>Tarea 7 – AJAX | Carlos Vico</h1>
+
+  <!-- RA7_c / RA7_e – XMLHttpRequest con XML -->
+  <div class="seccion">
+    <h2>RA7_c – Catálogo de artistas (XML)</h2>
+    <button id="btn-xml">Rellena la lista desplegable</button>
+    <br/>
+    <!-- Lista desplegable inicialmente vacía que se rellena con AJAX -->
+    <select id="select-artistas" size="8">
+      <option value="" disabled selected>– pulsa el botón –</option>
+    </select>
+  </div>
+
+  <!-- RA7_f – XMLHttpRequest con JSON -->
+  <div class="seccion">
+    <h2>RA7_f – Álbumes musicales (JSON)</h2>
+    <button id="btn-json">Cargar álbumes (JSON)</button>
+    <ul id="lista-albumes"></ul>
+  </div>
+
+  <!-- RA7_i – jQuery $.get con XML -->
+  <div class="seccion">
+    <h2>RA7_i – Catálogo con jQuery ($.get)</h2>
+    <button id="btn-jquery">Rellena con jQuery</button>
+    <br/>
+    <select id="select-artistas-jquery" size="8">
+      <option value="" disabled selected>– pulsa el botón –</option>
+    </select>
+  </div>
+
+  <script src="tarea7.js"></script>
+</body>
+</html>
