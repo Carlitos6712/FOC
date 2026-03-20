@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!--
+ * RA08 - Búsqueda dinámica de libros con AJAX y validación de formulario
+ *
+ * El campo "texto" solo acepta caracteres de texto (sin números).
+ * La búsqueda se realiza con AJAX para no recargar la página.
+ *
+ * @author  Carlos Vico
+ * @version 1.0
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>RA08 - Búsqueda de Libros</title>
+    <style>
+        * { box-sizing: border-box; }
+        body    { font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 2rem auto; background: #f0f2f5; }
+        h1      { background: #1a1a2e; color: #fff; padding: 1rem; border-radius: 6px; }
+        #buscador { display: flex; gap: .5rem; margin-bottom: 1rem; }
+        #texto  { flex: 1; padding: .6rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        #texto.error { border-color: red; }
+        #error-msg  { color: red; font-size: .9rem; min-height: 1.2rem; }
+        #resultados { background: #fff; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,.08); min-height: 60px; }
+        table   { width: 100%; border-collapse: collapse; }
+        th      { background: #1a1a2e; color: #fff; padding: .5rem 1rem; text-align: left; }
+        td      { border-bottom: 1px solid #eee; padding: .5rem 1rem; }
+        .loader { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<h1>🔍 Búsqueda de Libros — RA08</h1>
+
+<div id="buscador">
+    <!-- Solo caracteres de texto: validado en JS y con pattern HTML5 -->
+    <input type="text"
+           id="texto"
+           placeholder="Buscar por título..."
+           pattern="[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s,.]+"
+           autocomplete="off">
+</div>
+<p id="error-msg"></p>
+
+<div id="resultados">
+    <p class="loader">Escribe para buscar...</p>
+</div>
+
+<script>
+/**
+ * Valida que la cadena solo contenga letras, espacios y puntuación básica.
+ * Números y caracteres especiales están prohibidos.
+ *
+ * @param {string} valor - Texto a validar.
+ * @returns {boolean} true si el formato es correcto.
+ */
+function soloLetras(valor) {
+    // Permitimos letras (incluidas tildes y ñ), espacios, comas y puntos
+    return /^[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s,.]*$/.test(valor);
+}
+
+const campoTexto = document.getElementById('texto');
+const errorMsg   = document.getElementById('error-msg');
+const resultados = document.getElementById('resultados');
+
+let timerDebounce = null;
+
+/**
+ * Realiza la búsqueda AJAX al endpoint buscar_libros.php.
+ * Se llama con debounce para no saturar el servidor con cada tecla.
+ *
+ * @param {string} query - Texto de búsqueda ya validado.
+ */
+function buscarLibros(query) {
+    resultados.innerHTML = '<p class="loader">Buscando...</p>';
+
+    fetch(`buscar_libros.php?q=${encodeURIComponent(query)}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(resp => {
+            if (!resp.success || resp.data.length === 0) {
+                resultados.innerHTML = '<p>No se encontraron libros.</p>';
+                return;
+            }
+
+            // Construimos la tabla con los resultados
+            let html = '<table><thead><tr><th>ID</th><th>Título</th><th>Publicación</th><th>Autor</th></tr></thead><tbody>';
+
+            resp.data.forEach(libro => {
+                html += `<tr>
+                    <td>${libro.id}</td>
+                    <td>${libro.titulo}</td>
+                    <td>${libro.f_publicacion}</td>
+                    <td>${libro.nombre} ${libro.apellidos}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            resultados.innerHTML = html;
+        })
+        .catch(err => {
+            resultados.innerHTML = `<p style="color:red">Error al contactar con la API: ${err.message}</p>`;
+        });
+}
+
+// Escuchamos cada pulsación de tecla con debounce de 300ms
+campoTexto.addEventListener('input', () => {
+    const valor = campoTexto.value;
+
+    // Validación en tiempo real
+    if (!soloLetras(valor)) {
+        campoTexto.classList.add('error');
+        errorMsg.textContent = 'Solo se permiten letras y espacios.';
+        clearTimeout(timerDebounce);
+        return;
+    }
+
+    campoTexto.classList.remove('error');
+    errorMsg.textContent = '';
+
+    // Debounce: esperamos 300ms antes de lanzar la petición
+    clearTimeout(timerDebounce);
+    timerDebounce = setTimeout(() => {
+        if (valor.trim().length > 0) {
+            buscarLibros(valor.trim());
+        } else {
+            resultados.innerHTML = '<p class="loader">Escribe para buscar...</p>';
+        }
+    }, 300);
+});
+</script>
+
+</body>
+</html>
