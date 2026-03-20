@@ -1,0 +1,512 @@
+"""
+Unidad 4. Estructuras de datos
+OPT4 - Tarea individual
+
+Autor: Carlos Vico
+Fecha: 2025
+Descripción: Manipulación de listas, tuplas y diccionarios en Python.
+             Incluye operaciones CRUD sobre colecciones, funciones integradas
+             de manejo de datos y diccionarios anidados para gestión de almacén.
+"""
+
+
+# =============================================================================
+# EJERCICIO 1 - Lista de productos: crear, mostrar, añadir
+# =============================================================================
+
+def crear_lista_productos() -> list:
+    """
+    Crea y devuelve una lista con al menos 5 nombres de productos.
+
+    Los productos se definen aquí como datos de muestra para que el ejercicio
+    sea autoejecutable sin necesidad de entrada manual.
+
+    Returns:
+        list: Lista de strings con nombres de productos.
+
+    Example:
+        >>> crear_lista_productos()
+        ['manzana', 'leche', 'pan', 'arroz', 'aceite']
+    """
+    return ["manzana", "leche", "pan", "arroz", "aceite"]
+
+
+def mostrar_lista(productos: list) -> None:
+    """
+    Muestra todos los elementos de la lista por pantalla con su índice.
+
+    Args:
+        productos (list): Lista de productos a mostrar.
+
+    Returns:
+        None
+    """
+    print("\n  Lista de productos:")
+    for indice, producto in enumerate(productos):
+        print(f"    [{indice}] {producto}")
+
+
+def mostrar_primero_y_ultimo(productos: list) -> None:
+    """
+    Muestra el primer y último elemento de una lista.
+
+    Usa índice -1 para acceder al último elemento (idiomático en Python),
+    evitando calcular len() - 1.
+
+    Args:
+        productos (list): Lista de la que se extraen los extremos.
+
+    Returns:
+        None
+
+    Raises:
+        IndexError: Si la lista está vacía.
+    """
+    if not productos:
+        print("  ✗ La lista está vacía.")
+        return
+
+    print(f"\n  → Primero: {productos[0]}")
+    print(f"  → Último:  {productos[-1]}")
+
+
+def aniadir_producto(productos: list, nuevo_producto: str) -> list:
+    """
+    Añade un nuevo producto al final de la lista usando append().
+
+    append() modifica la lista en sitio (in-place) y es O(1) amortizado,
+    la opción más eficiente para añadir al final.
+
+    Args:
+        productos (list): Lista original de productos.
+        nuevo_producto (str): Nombre del producto a añadir.
+
+    Returns:
+        list: La misma lista con el producto añadido.
+
+    Example:
+        >>> aniadir_producto(['pan', 'leche'], 'huevos')
+        ['pan', 'leche', 'huevos']
+    """
+    productos.append(nuevo_producto)
+    return productos
+
+
+def ejecutar_ejercicio_1() -> list:
+    """
+    Ejercicio 1: Crea lista, muestra completa, primero/último, añade elemento.
+
+    Returns:
+        list: Lista actualizada (se reutiliza en ejercicio 2).
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 1 - Lista de productos")
+    print("=" * 55)
+
+    productos = crear_lista_productos()
+    mostrar_lista(productos)
+    mostrar_primero_y_ultimo(productos)
+
+    nuevo = "yogur"
+    aniadir_producto(productos, nuevo)
+    print(f"\n  → Producto '{nuevo}' añadido con append().")
+    mostrar_lista(productos)
+
+    return productos
+
+
+# =============================================================================
+# EJERCICIO 2 - Ordenar y eliminar de la lista
+# =============================================================================
+
+def ordenar_lista_alfabeticamente(productos: list) -> list:
+    """
+    Ordena la lista de productos alfabéticamente y la devuelve.
+
+    Usa sorted() en lugar de .sort() para generar una nueva lista ordenada
+    sin modificar la original, respetando la inmutabilidad cuando sea posible.
+
+    Args:
+        productos (list): Lista de productos a ordenar.
+
+    Returns:
+        list: Nueva lista ordenada alfabéticamente.
+
+    Example:
+        >>> ordenar_lista_alfabeticamente(['pan', 'arroz', 'leche'])
+        ['arroz', 'leche', 'pan']
+    """
+    return sorted(productos)
+
+
+def eliminar_producto(productos: list, producto: str) -> list:
+    """
+    Elimina un producto concreto de la lista si existe.
+
+    Se comprueba existencia con 'in' antes de remove() para evitar
+    ValueError en caso de que el producto no esté en la lista.
+
+    Args:
+        productos (list): Lista de productos.
+        producto (str): Nombre del producto a eliminar.
+
+    Returns:
+        list: Lista actualizada tras la eliminación.
+
+    Example:
+        >>> eliminar_producto(['pan', 'leche', 'arroz'], 'leche')
+        ['pan', 'arroz']
+    """
+    if producto in productos:
+        productos.remove(producto)
+        print(f"  → Producto '{producto}' eliminado correctamente.")
+    else:
+        print(f"  ✗ Producto '{producto}' no encontrado en la lista.")
+    return productos
+
+
+def ejecutar_ejercicio_2(productos: list) -> list:
+    """
+    Ejercicio 2: Ordena alfabéticamente y elimina un producto concreto.
+
+    Args:
+        productos (list): Lista generada en el ejercicio 1.
+
+    Returns:
+        list: Lista resultante tras operaciones.
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 2 - Ordenar y eliminar")
+    print("=" * 55)
+
+    ordenada = ordenar_lista_alfabeticamente(productos)
+    print("\n  → Lista ordenada alfabéticamente:")
+    mostrar_lista(ordenada)
+
+    producto_a_eliminar = "arroz"
+    eliminar_producto(ordenada, producto_a_eliminar)
+    print("\n  → Lista actualizada tras eliminación:")
+    mostrar_lista(ordenada)
+
+    return ordenada
+
+
+# =============================================================================
+# EJERCICIO 3 - Diccionario de stock
+# =============================================================================
+
+def crear_diccionario_stock(productos: list) -> dict:
+    """
+    Crea un diccionario de stock a partir de la lista de productos.
+
+    Las claves son los nombres de los productos (strings) y los valores
+    son enteros que representan la cantidad disponible.
+    Se asignan valores de ejemplo para simular un inventario real.
+
+    Args:
+        productos (list): Lista de nombres de productos.
+
+    Returns:
+        dict: Diccionario {nombre_producto: cantidad}.
+
+    Example:
+        >>> crear_diccionario_stock(['pan', 'leche'])
+        {'pan': 15, 'leche': 8}
+    """
+    # Cantidades de ejemplo representativas para cada producto
+    cantidades_ejemplo = [15, 8, 22, 5, 30, 12]
+
+    # zip() combina producto con su cantidad; si hay más productos que cantidades,
+    # se asigna 0 como valor por defecto
+    stock = {}
+    for indice, producto in enumerate(productos):
+        stock[producto] = cantidades_ejemplo[indice] if indice < len(cantidades_ejemplo) else 0
+
+    return stock
+
+
+def calcular_total_productos(stock: dict) -> int:
+    """
+    Calcula la suma total de todos los valores (cantidades) del diccionario.
+
+    Usa sum() con values() que es la forma más idiomática y eficiente en Python
+    para sumar todos los valores de un diccionario.
+
+    Args:
+        stock (dict): Diccionario de stock {producto: cantidad}.
+
+    Returns:
+        int: Suma total de todas las cantidades.
+
+    Example:
+        >>> calcular_total_productos({'pan': 10, 'leche': 5})
+        15
+    """
+    return sum(stock.values())
+
+
+def productos_con_stock_minimo(stock: dict, minimo: int) -> list:
+    """
+    Devuelve los productos cuyo stock supera una cantidad dada.
+
+    La comprensión de lista es más legible y eficiente que un bucle
+    for con append() para este tipo de filtrado.
+
+    Args:
+        stock (dict): Diccionario {producto: cantidad}.
+        minimo (int): Umbral mínimo de stock (exclusive).
+
+    Returns:
+        list: Lista de productos con cantidad > minimo.
+
+    Example:
+        >>> productos_con_stock_minimo({'pan': 15, 'leche': 5}, 10)
+        ['pan']
+    """
+    return [producto for producto, cantidad in stock.items() if cantidad > minimo]
+
+
+def ejecutar_ejercicio_3(productos: list) -> dict:
+    """
+    Ejercicio 3: Crea diccionario de stock y aplica funciones de análisis.
+
+    Args:
+        productos (list): Lista de productos del ejercicio anterior.
+
+    Returns:
+        dict: Diccionario de stock creado.
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 3 - Diccionario de stock")
+    print("=" * 55)
+
+    stock = crear_diccionario_stock(productos)
+
+    print("\n  → Stock actual:")
+    for producto, cantidad in stock.items():
+        print(f"    {producto:<15} : {cantidad} unidades")
+
+    total = calcular_total_productos(stock)
+    print(f"\n  → Total de productos disponibles: {total}")
+
+    umbral = 10
+    con_stock_alto = productos_con_stock_minimo(stock, umbral)
+    print(f"\n  → Productos con más de {umbral} unidades: {con_stock_alto}")
+
+    return stock
+
+
+# =============================================================================
+# EJERCICIO 4 - Tuplas vs Listas
+# =============================================================================
+
+def crear_tupla_productos(productos: list) -> tuple:
+    """
+    Convierte la lista de productos en una tupla.
+
+    Las tuplas son inmutables: se usan cuando los datos no deben modificarse,
+    como un catálogo de referencia. Son más eficientes en memoria que las listas.
+
+    Args:
+        productos (list): Lista de productos a convertir.
+
+    Returns:
+        tuple: Tupla con los mismos elementos que la lista.
+
+    Example:
+        >>> crear_tupla_productos(['pan', 'leche'])
+        ('pan', 'leche')
+    """
+    return tuple(productos)
+
+
+def comparar_lista_vs_tupla(lista: list, tupla: tuple) -> None:
+    """
+    Muestra y explica las diferencias entre lista y tupla con ejemplos concretos.
+
+    Args:
+        lista (list): Lista de productos.
+        tupla (tuple): Tupla equivalente.
+
+    Returns:
+        None
+    """
+    print("\n  Comparativa Lista vs Tupla:")
+    print(f"  {'Característica':<25} {'Lista':<15} {'Tupla'}")
+    print(f"  {'-'*60}")
+    print(f"  {'Tipo':<25} {str(type(lista).__name__):<15} {str(type(tupla).__name__)}")
+    print(f"  {'¿Mutable?':<25} {'Sí':<15} {'No'}")
+    print(f"  {'Añadir elementos':<25} {'lista.append()':<15} {'No permitido'}")
+    print(f"  {'Uso recomendado':<25} {'Datos variables':<15} {'Datos fijos/constantes'}")
+
+    print(f"\n  → Ejemplo mejor uso de tupla: coordenadas GPS, fechas, configuración.")
+    print(f"  → En este caso: la tupla sería ideal para un catálogo de productos fijo.")
+
+    # Intentamos modificar la tupla para demostrar la inmutabilidad
+    try:
+        tupla[0] = "nuevo_valor"  # type: ignore
+    except TypeError as error:
+        print(f"\n  → Intento de modificar tupla → Error esperado: {error}")
+
+
+def ejecutar_ejercicio_4(productos: list) -> None:
+    """
+    Ejercicio 4: Crea tupla con los mismos productos y explica diferencias.
+
+    Args:
+        productos (list): Lista de productos del ejercicio anterior.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 4 - Tuplas vs Listas")
+    print("=" * 55)
+
+    productos_tupla = crear_tupla_productos(productos)
+    print(f"\n  → Lista:  {productos}")
+    print(f"  → Tupla:  {productos_tupla}")
+
+    comparar_lista_vs_tupla(productos, productos_tupla)
+
+
+# =============================================================================
+# EJERCICIO 5 - Diccionario anidado de almacén
+# =============================================================================
+
+def crear_almacen() -> dict:
+    """
+    Crea un diccionario anidado representando un almacén con productos.
+
+    Cada clave es el nombre del producto, y el valor es otro diccionario
+    con las propiedades: nombre, precio y stock.
+
+    Se usa estructura anidada para reflejar un modelo de datos real
+    donde cada entidad tiene múltiples atributos.
+
+    Returns:
+        dict: Diccionario anidado {nombre_producto: {nombre, precio, stock}}.
+
+    Example:
+        >>> almacen = crear_almacen()
+        >>> almacen['manzana']['precio']
+        1.2
+    """
+    return {
+        "manzana":  {"nombre": "Manzana",   "precio": 1.20,  "stock": 50},
+        "leche":    {"nombre": "Leche",      "precio": 0.99,  "stock": 30},
+        "pan":      {"nombre": "Pan",        "precio": 1.50,  "stock": 20},
+        "arroz":    {"nombre": "Arroz",      "precio": 2.10,  "stock": 15},
+        "aceite":   {"nombre": "Aceite",     "precio": 4.75,  "stock": 8},
+    }
+
+
+def mostrar_precio_producto(almacen: dict, nombre_producto: str) -> None:
+    """
+    Muestra el precio de un producto concreto del almacén.
+
+    Args:
+        almacen (dict): Diccionario del almacén.
+        nombre_producto (str): Clave del producto a consultar.
+
+    Returns:
+        None
+    """
+    producto = almacen.get(nombre_producto)
+    if producto:
+        print(f"  → Precio de '{producto['nombre']}': {producto['precio']:.2f} €")
+    else:
+        print(f"  ✗ Producto '{nombre_producto}' no encontrado en el almacén.")
+
+
+def mostrar_productos_con_stock_inferior(almacen: dict, limite: int) -> None:
+    """
+    Muestra todos los productos cuyo stock es inferior al límite dado.
+
+    Args:
+        almacen (dict): Diccionario del almacén.
+        limite (int): Umbral de stock (exclusive).
+
+    Returns:
+        None
+    """
+    print(f"\n  → Productos con stock inferior a {limite}:")
+    encontrados = False
+
+    for clave, datos in almacen.items():
+        if datos["stock"] < limite:
+            print(f"    - {datos['nombre']}: {datos['stock']} unidades")
+            encontrados = True
+
+    if not encontrados:
+        print(f"    (Ningún producto tiene stock inferior a {limite})")
+
+
+def calcular_valor_total_almacen(almacen: dict) -> float:
+    """
+    Calcula el valor total del inventario (precio × stock de cada producto).
+
+    El valor total representa la inversión total en stock del almacén,
+    un dato clave para contabilidad e inventario.
+
+    Args:
+        almacen (dict): Diccionario del almacén con precio y stock.
+
+    Returns:
+        float: Suma de (precio * stock) para todos los productos.
+
+    Example:
+        >>> almacen = {'pan': {'precio': 1.5, 'stock': 10}}
+        >>> calcular_valor_total_almacen(almacen)
+        15.0
+    """
+    return sum(datos["precio"] * datos["stock"] for datos in almacen.values())
+
+
+def ejecutar_ejercicio_5() -> None:
+    """
+    Ejercicio 5: Crea almacén anidado, consulta precio, filtra stock y calcula valor total.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 5 - Diccionario anidado de almacén")
+    print("=" * 55)
+
+    almacen = crear_almacen()
+
+    # Mostrar estructura completa del almacén
+    print("\n  → Almacén completo:")
+    print(f"  {'Producto':<15} {'Precio':>8} {'Stock':>8}")
+    print(f"  {'-'*35}")
+    for datos in almacen.values():
+        print(f"  {datos['nombre']:<15} {datos['precio']:>7.2f}€ {datos['stock']:>7}")
+
+    # Precio de un producto concreto
+    print()
+    mostrar_precio_producto(almacen, "aceite")
+
+    # Productos con stock bajo
+    mostrar_productos_con_stock_inferior(almacen, 20)
+
+    # Valor total del almacén
+    valor_total = calcular_valor_total_almacen(almacen)
+    print(f"\n  → Valor total del inventario: {valor_total:.2f} €")
+
+
+# =============================================================================
+# PUNTO DE ENTRADA
+# =============================================================================
+
+if __name__ == "__main__":
+    """
+    Ejecuta todos los ejercicios de la Unidad 4 en secuencia.
+    Los ejercicios 1-4 comparten la misma lista de productos para
+    demostrar la evolución de las operaciones sobre la misma colección.
+    """
+    productos = ejecutar_ejercicio_1()
+    productos = ejecutar_ejercicio_2(productos)
+    ejecutar_ejercicio_3(productos)
+    ejecutar_ejercicio_4(productos)
+    ejecutar_ejercicio_5()

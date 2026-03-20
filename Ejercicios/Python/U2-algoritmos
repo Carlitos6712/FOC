@@ -1,0 +1,173 @@
+"""
+Unidad 2. Desarrollo de algoritmos en Python
+OPT2 - Tarea individual
+
+Autor: Carlos Vico
+Fecha: 2025
+Descripción: Implementación de algoritmos básicos con diagrama de flujo,
+             validación de paridad y pruebas documentadas.
+"""
+
+
+# =============================================================================
+# EJERCICIO 1 - Diagrama de flujo (representado como comentario estructurado)
+# =============================================================================
+#
+# [INICIO]
+#    |
+#    v
+# [Pedir número entero al usuario]
+#    |
+#    v
+# [¿Es divisible entre 2?] (numero % 2 == 0)
+#   /        \
+# [SÍ]      [NO]
+#   |          |
+# [PAR]    [IMPAR]
+#   \          /
+#    v        v
+#   [Mostrar resultado]
+#        |
+#        v
+#      [FIN]
+#
+# =============================================================================
+
+
+def solicitar_numero_entero() -> int:
+    """
+    Solicita al usuario un número entero por consola con validación.
+
+    La validación se hace en bucle para no crashear el programa
+    si el usuario introduce texto u otro tipo de dato no válido.
+
+    Returns:
+        int: El número entero introducido por el usuario.
+
+    Example:
+        >>> solicitar_numero_entero()
+        Introduce un número entero: 4
+        4
+    """
+    while True:
+        entrada = input("Introduce un número entero: ")
+        try:
+            return int(entrada)
+        except ValueError:
+            # Informamos sin lanzar excepción: el bucle reintenta
+            print(f"  ✗ '{entrada}' no es un número entero válido. Inténtalo de nuevo.")
+
+
+def determinar_paridad(numero: int) -> str:
+    """
+    Determina si un número entero es par o impar.
+
+    Usa el operador módulo (%) porque es la forma más directa y legible
+    de comprobar la divisibilidad entre 2.
+
+    Args:
+        numero (int): El número a evaluar.
+
+    Returns:
+        str: 'par' si el número es divisible entre 2, 'impar' en caso contrario.
+
+    Example:
+        >>> determinar_paridad(4)
+        'par'
+        >>> determinar_paridad(-3)
+        'impar'
+        >>> determinar_paridad(0)
+        'par'
+    """
+    # El 0 es par por definición matemática (0 % 2 == 0)
+    return "par" if numero % 2 == 0 else "impar"
+
+
+def mostrar_resultado_paridad(numero: int, paridad: str) -> None:
+    """
+    Muestra por pantalla el resultado del análisis de paridad.
+
+    Args:
+        numero (int): El número analizado.
+        paridad (str): El resultado ('par' o 'impar').
+
+    Returns:
+        None
+    """
+    print(f"\n  → El número {numero} es {paridad}.")
+
+
+def ejecutar_ejercicio_2() -> None:
+    """
+    Punto de entrada del Ejercicio 2.
+
+    Orquesta el flujo completo: solicitar número → determinar paridad → mostrar resultado.
+    Separado en funciones para respetar el principio de responsabilidad única (SRP).
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 50)
+    print("  EJERCICIO 2 - Par o Impar")
+    print("=" * 50)
+
+    numero = solicitar_numero_entero()
+    paridad = determinar_paridad(numero)
+    mostrar_resultado_paridad(numero, paridad)
+
+
+# =============================================================================
+# EJERCICIO 3 - Tabla de pruebas
+# =============================================================================
+
+def ejecutar_pruebas_paridad() -> None:
+    """
+    Ejercicio 3: Realiza y muestra tres pruebas de validación del algoritmo.
+
+    Las pruebas cubren los tres casos relevantes:
+      - Número par
+      - Número impar
+      - Número negativo o cero (casos límite)
+
+    Cada prueba compara el resultado esperado con el obtenido
+    para verificar la corrección del algoritmo.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 60)
+    print("  EJERCICIO 3 - Tabla de pruebas")
+    print("=" * 60)
+
+    # Definición de casos de prueba: (numero, resultado_esperado)
+    # Se incluyen casos límite (0, negativos) para una validación robusta
+    casos_de_prueba = [
+        (4,   "par"),
+        (7,   "impar"),
+        (-2,  "par"),
+        (0,   "par"),
+        (-5,  "impar"),
+    ]
+
+    # Cabecera de la tabla
+    print(f"\n{'Número':<12} {'Esperado':<12} {'Obtenido':<12} {'¿Coincide?'}")
+    print("-" * 50)
+
+    for numero, esperado in casos_de_prueba:
+        obtenido = determinar_paridad(numero)
+        coincide = "✔" if obtenido == esperado else "✘"
+        print(f"{numero:<12} {esperado:<12} {obtenido:<12} {coincide}")
+
+    print("-" * 50)
+
+
+# =============================================================================
+# PUNTO DE ENTRADA
+# =============================================================================
+
+if __name__ == "__main__":
+    """
+    Ejecuta los ejercicios de la Unidad 2 en secuencia.
+    """
+    ejecutar_ejercicio_2()
+    ejecutar_pruebas_paridad()

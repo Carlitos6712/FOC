@@ -1,0 +1,489 @@
+"""
+Unidad 5. POO y bases de datos
+OPT5 - Tarea individual
+
+Autor: Carlos Vico
+Fecha: 2025
+Descripción: Implementación de POO (clases, herencia, encapsulamiento, getters/setters)
+             conectada a una base de datos SQLite3 con operaciones CRUD completas,
+             siguiendo principios SOLID y separación de responsabilidades.
+"""
+
+import sqlite3
+from datetime import date
+
+
+# =============================================================================
+# EJERCICIO 1 - Clase Producto (POO básica)
+# =============================================================================
+
+class Producto:
+    """
+    Representa un artículo de una tienda con id, nombre y precio.
+
+    Aplica encapsulamiento básico: los atributos son públicos en este nivel
+    y se vuelven privados con getter/setter en ProductoAlimenticio (Ej. 2).
+
+    Attributes:
+        id (int): Identificador único del producto.
+        nombre (str): Nombre descriptivo del producto.
+        precio (float): Precio en euros del producto.
+
+    Example:
+        >>> p = Producto(1, 'Manzana', 1.20)
+        >>> p.mostrar_info()
+        ID: 1 | Nombre: Manzana | Precio: 1.20 €
+    """
+
+    def __init__(self, id: int, nombre: str, precio: float) -> None:
+        """
+        Constructor de Producto.
+
+        Args:
+            id (int): Identificador del producto.
+            nombre (str): Nombre del producto.
+            precio (float): Precio del producto (debe ser >= 0).
+
+        Raises:
+            ValueError: Si el precio es negativo.
+        """
+        if precio < 0:
+            raise ValueError(f"El precio no puede ser negativo: {precio}")
+
+        self.id = id
+        self.nombre = nombre
+        self.precio = precio
+
+    def mostrar_info(self) -> None:
+        """
+        Muestra la información del producto por pantalla.
+
+        Returns:
+            None
+        """
+        print(f"  ID: {self.id} | Nombre: {self.nombre:<20} | Precio: {self.precio:.2f} €")
+
+    def __repr__(self) -> str:
+        """
+        Representación técnica del objeto para depuración.
+
+        Returns:
+            str: Representación del objeto.
+        """
+        return f"Producto(id={self.id}, nombre='{self.nombre}', precio={self.precio})"
+
+
+def ejecutar_ejercicio_1() -> None:
+    """
+    Ejercicio 1: Crea instancias de Producto y muestra su información.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 1 - Clase Producto")
+    print("=" * 55)
+
+    productos_prueba = [
+        Producto(1, "Manzana",  1.20),
+        Producto(2, "Leche",    0.99),
+        Producto(3, "Pan",      1.50),
+    ]
+
+    print("\n  → Objetos Producto creados:")
+    for producto in productos_prueba:
+        producto.mostrar_info()
+
+
+# =============================================================================
+# EJERCICIO 2 - Encapsulamiento con getter/setter
+# =============================================================================
+
+class ProductoConPrecioPrivado(Producto):
+    """
+    Extiende Producto con precio privado y validación via getter/setter.
+
+    El atributo __precio usa name mangling de Python (doble guión bajo)
+    para garantizar que no se modifique directamente desde fuera de la clase,
+    obligando a pasar por el setter que aplica la validación.
+
+    Hereda de:
+        Producto
+
+    Example:
+        >>> p = ProductoConPrecioPrivado(1, 'Pan', 1.50)
+        >>> p.precio = -5
+        ValueError: El precio no puede ser negativo.
+        >>> p.precio = 2.00
+        >>> print(p.precio)
+        2.0
+    """
+
+    def __init__(self, id: int, nombre: str, precio: float) -> None:
+        """
+        Constructor que inicializa el precio a través del setter.
+
+        Args:
+            id (int): Identificador del producto.
+            nombre (str): Nombre del producto.
+            precio (float): Precio inicial (validado por el setter).
+        """
+        # Llamamos al padre sin precio para luego asignarlo por el setter
+        self.id = id
+        self.nombre = nombre
+        self.precio = precio  # Invoca el setter definido abajo
+
+    @property
+    def precio(self) -> float:
+        """
+        Getter del precio privado.
+
+        Returns:
+            float: Precio actual del producto.
+        """
+        return self.__precio
+
+    @precio.setter
+    def precio(self, nuevo_precio: float) -> None:
+        """
+        Setter del precio con validación de valor no negativo.
+
+        Se usa setter en lugar de validación en __init__ para que la regla
+        de negocio se aplique también cuando el precio se modifica después
+        de la creación del objeto.
+
+        Args:
+            nuevo_precio (float): Nuevo precio a asignar.
+
+        Raises:
+            ValueError: Si el precio es negativo.
+        """
+        if nuevo_precio < 0:
+            raise ValueError(f"El precio no puede ser negativo: {nuevo_precio}")
+        # Doble guión bajo → name mangling: _ProductoConPrecioPrivado__precio
+        self.__precio = nuevo_precio
+
+
+def ejecutar_ejercicio_2() -> None:
+    """
+    Ejercicio 2: Demuestra encapsulamiento con getter/setter en Producto.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 2 - Encapsulamiento getter/setter")
+    print("=" * 55)
+
+    producto = ProductoConPrecioPrivado(1, "Aceite", 4.75)
+    print(f"\n  → Precio inicial: {producto.precio:.2f} €")
+
+    producto.precio = 5.10
+    print(f"  → Precio modificado a: {producto.precio:.2f} €")
+
+    print("\n  → Intentando asignar precio negativo:")
+    try:
+        producto.precio = -1.00
+    except ValueError as error:
+        print(f"    ✗ Error esperado: {error}")
+
+
+# =============================================================================
+# EJERCICIO 3 - Herencia: ProductoAlimenticio
+# =============================================================================
+
+class ProductoAlimenticio(ProductoConPrecioPrivado):
+    """
+    Extiende ProductoConPrecioPrivado añadiendo fecha de caducidad.
+
+    Hereda toda la lógica de precio encapsulado e incorpora
+    la comprobación de caducidad como nueva responsabilidad de esta subclase.
+
+    Hereda de:
+        ProductoConPrecioPrivado
+
+    Attributes:
+        fecha_caducidad (date): Fecha límite de consumo del producto.
+
+    Example:
+        >>> from datetime import date
+        >>> p = ProductoAlimenticio(1, 'Yogur', 0.80, date(2025, 12, 31))
+        >>> p.esta_caducado()
+        False
+    """
+
+    def __init__(self, id: int, nombre: str, precio: float, fecha_caducidad: date) -> None:
+        """
+        Constructor de ProductoAlimenticio.
+
+        Args:
+            id (int): Identificador del producto.
+            nombre (str): Nombre del producto.
+            precio (float): Precio del producto.
+            fecha_caducidad (date): Fecha de caducidad del producto.
+        """
+        super().__init__(id, nombre, precio)
+        self.fecha_caducidad = fecha_caducidad
+
+    def esta_caducado(self) -> bool:
+        """
+        Comprueba si el producto está caducado en función de la fecha actual.
+
+        Compara con date.today() para tener siempre la fecha real,
+        sin necesidad de pasar la fecha como parámetro.
+
+        Returns:
+            bool: True si la fecha de caducidad ya pasó, False en caso contrario.
+
+        Example:
+            >>> p = ProductoAlimenticio(1, 'Leche', 0.99, date(2020, 1, 1))
+            >>> p.esta_caducado()
+            True
+        """
+        return self.fecha_caducidad < date.today()
+
+    def mostrar_info(self) -> None:
+        """
+        Extiende mostrar_info() del padre añadiendo caducidad.
+
+        Returns:
+            None
+        """
+        super().mostrar_info()
+        estado = "⚠ CADUCADO" if self.esta_caducado() else "✔ En fecha"
+        print(f"    Caducidad: {self.fecha_caducidad} | Estado: {estado}")
+
+
+def ejecutar_ejercicio_3() -> None:
+    """
+    Ejercicio 3: Crea ProductoAlimenticio y prueba la comprobación de caducidad.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 3 - Herencia: ProductoAlimenticio")
+    print("=" * 55)
+
+    productos = [
+        ProductoAlimenticio(1, "Yogur",   0.80, date(2026, 12, 31)),
+        ProductoAlimenticio(2, "Queso",   2.50, date(2023, 6, 15)),   # Caducado
+        ProductoAlimenticio(3, "Jamón",   8.99, date(2027, 3, 1)),
+    ]
+
+    print("\n  → Productos alimenticios:")
+    for producto in productos:
+        producto.mostrar_info()
+        print()
+
+
+# =============================================================================
+# EJERCICIO 4 - Conexión SQLite3 y creación de tabla
+# =============================================================================
+
+NOMBRE_BD = "tienda.db"
+
+
+def obtener_conexion(nombre_bd: str = NOMBRE_BD) -> sqlite3.Connection:
+    """
+    Crea y devuelve una conexión a la base de datos SQLite.
+
+    Se centraliza la conexión aquí para que todos los métodos CRUD
+    usen el mismo punto de acceso y sea fácil cambiar la BD en el futuro.
+
+    Args:
+        nombre_bd (str): Ruta o nombre del archivo de base de datos.
+
+    Returns:
+        sqlite3.Connection: Objeto de conexión activa.
+    """
+    return sqlite3.connect(nombre_bd)
+
+
+def crear_tabla_productos(conexion: sqlite3.Connection) -> None:
+    """
+    Crea la tabla 'productos' en la base de datos si no existe.
+
+    Usa IF NOT EXISTS para que el script sea idempotente:
+    se puede ejecutar múltiples veces sin error ni duplicados.
+
+    Esquema de la tabla:
+        - id: INTEGER PRIMARY KEY (autoincremento)
+        - nombre: TEXT NOT NULL
+        - precio: REAL (precio con decimales)
+        - tipo: TEXT (categoría del producto)
+        - fecha_caducidad: TEXT (almacenada como ISO 8601: YYYY-MM-DD)
+
+    Args:
+        conexion (sqlite3.Connection): Conexión activa a SQLite.
+
+    Returns:
+        None
+    """
+    cursor = conexion.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS productos (
+            id               INTEGER PRIMARY KEY,
+            nombre           TEXT    NOT NULL,
+            precio           REAL,
+            tipo             TEXT,
+            fecha_caducidad  TEXT
+        )
+    """)
+    conexion.commit()
+    print("  → Tabla 'productos' creada o ya existente (IF NOT EXISTS).")
+
+
+def ejecutar_ejercicio_4() -> sqlite3.Connection:
+    """
+    Ejercicio 4: Conecta a SQLite y crea la tabla productos.
+
+    Returns:
+        sqlite3.Connection: Conexión abierta para reutilizar en ejercicio 5.
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 4 - Conexión SQLite y tabla productos")
+    print("=" * 55)
+
+    conexion = obtener_conexion()
+    crear_tabla_productos(conexion)
+    print(f"  → Conectado a: {NOMBRE_BD}")
+
+    return conexion
+
+
+# =============================================================================
+# EJERCICIO 5 - CRUD en base de datos desde clase gestora
+# =============================================================================
+
+class GestorBD:
+    """
+    Gestiona todas las operaciones CRUD sobre la tabla productos en SQLite.
+
+    Centraliza la lógica de base de datos para que las clases Producto
+    no tengan dependencia directa con la capa de persistencia (SRP).
+
+    Attributes:
+        conexion (sqlite3.Connection): Conexión activa a la base de datos.
+
+    Example:
+        >>> gestor = GestorBD(conexion)
+        >>> gestor.insertar_producto(ProductoAlimenticio(1, 'Pan', 1.5, date(2026, 1, 1)))
+    """
+
+    def __init__(self, conexion: sqlite3.Connection) -> None:
+        """
+        Constructor del gestor de base de datos.
+
+        Args:
+            conexion (sqlite3.Connection): Conexión activa a SQLite.
+        """
+        # Guardamos la conexión existente en lugar de crear una nueva
+        # para que toda la sesión comparta el mismo contexto transaccional
+        self.conexion = conexion
+
+    def insertar_producto(self, producto: ProductoAlimenticio) -> None:
+        """
+        Inserta un objeto ProductoAlimenticio en la tabla productos.
+
+        Usa parámetros nombrados (?) para evitar inyección SQL.
+
+        Args:
+            producto (ProductoAlimenticio): El objeto a persistir.
+
+        Returns:
+            None
+        """
+        cursor = self.conexion.cursor()
+        cursor.execute(
+            "INSERT INTO productos (nombre, precio, tipo, fecha_caducidad) VALUES (?, ?, ?, ?)",
+            (
+                producto.nombre,
+                producto.precio,
+                "Alimenticio",
+                str(producto.fecha_caducidad),
+            )
+        )
+        self.conexion.commit()
+        print(f"  → Producto '{producto.nombre}' insertado en la BD.")
+
+    def obtener_todos_los_productos(self) -> list:
+        """
+        Recupera todos los registros de la tabla productos.
+
+        Returns:
+            list: Lista de tuplas con todos los registros (id, nombre, precio, tipo, fecha).
+        """
+        cursor = self.conexion.cursor()
+        cursor.execute("SELECT * FROM productos")
+        return cursor.fetchall()
+
+    def mostrar_todos_los_productos(self) -> None:
+        """
+        Obtiene y muestra por pantalla todos los productos de la base de datos.
+
+        Returns:
+            None
+        """
+        registros = self.obtener_todos_los_productos()
+
+        if not registros:
+            print("  → No hay productos en la base de datos.")
+            return
+
+        print(f"\n  {'ID':<5} {'Nombre':<20} {'Precio':>8} {'Tipo':<15} {'Caducidad'}")
+        print(f"  {'-'*65}")
+        for fila in registros:
+            id_prod, nombre, precio, tipo, caducidad = fila
+            print(f"  {id_prod:<5} {nombre:<20} {precio:>7.2f}€ {str(tipo):<15} {caducidad}")
+
+
+def ejecutar_ejercicio_5(conexion: sqlite3.Connection) -> None:
+    """
+    Ejercicio 5: Inserta productos alimenticios y muestra todos los registros.
+
+    Args:
+        conexion (sqlite3.Connection): Conexión abierta desde el ejercicio 4.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 55)
+    print("  EJERCICIO 5 - CRUD desde GestorBD")
+    print("=" * 55)
+
+    gestor = GestorBD(conexion)
+
+    productos_a_insertar = [
+        ProductoAlimenticio(None, "Manzana", 1.20, date(2026, 6, 30)),
+        ProductoAlimenticio(None, "Leche",   0.99, date(2026, 2, 15)),
+        ProductoAlimenticio(None, "Yogur",   0.80, date(2026, 8, 10)),
+    ]
+
+    print("\n  → Insertando productos:")
+    for producto in productos_a_insertar:
+        gestor.insertar_producto(producto)
+
+    print("\n  → Lista completa de la tabla productos:")
+    gestor.mostrar_todos_los_productos()
+
+    # Cerramos la conexión cuando ya no se necesita
+    conexion.close()
+    print("\n  → Conexión a la base de datos cerrada.")
+
+
+# =============================================================================
+# PUNTO DE ENTRADA
+# =============================================================================
+
+if __name__ == "__main__":
+    """
+    Ejecuta todos los ejercicios de la Unidad 5 en secuencia.
+    La conexión SQLite se propaga del ejercicio 4 al 5
+    para reutilizar el mismo contexto de BD.
+    """
+    ejecutar_ejercicio_1()
+    ejecutar_ejercicio_2()
+    ejecutar_ejercicio_3()
+    conexion = ejecutar_ejercicio_4()
+    ejecutar_ejercicio_5(conexion)

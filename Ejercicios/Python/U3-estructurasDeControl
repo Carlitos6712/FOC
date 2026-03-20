@@ -1,0 +1,390 @@
+"""
+Unidad 3. Estructuras de control
+OPT3 - Tarea individual
+
+Autor: Carlos Vico
+Fecha: 2025
+Descripción: Implementación de estructuras de control (if/elif/else, for, while),
+             depuración de errores, rendimiento con timeit y documentación completa.
+"""
+
+import time
+
+
+# =============================================================================
+# EJERCICIO 1 - Mayor de tres números con if/elif/else
+# =============================================================================
+
+def solicitar_entero(mensaje: str) -> int:
+    """
+    Solicita un número entero al usuario con validación de entrada.
+
+    Reutilizable en todos los ejercicios que requieran entrada numérica entera.
+
+    Args:
+        mensaje (str): Texto que se muestra al usuario al pedir el dato.
+
+    Returns:
+        int: Número entero válido introducido por el usuario.
+
+    Example:
+        >>> solicitar_entero("Introduce el primer número: ")
+        Introduce el primer número: 5
+        5
+    """
+    while True:
+        entrada = input(mensaje)
+        try:
+            return int(entrada)
+        except ValueError:
+            print(f"  ✗ '{entrada}' no es válido. Introduce un número entero.")
+
+
+def encontrar_mayor(a: int, b: int, c: int) -> int:
+    """
+    Determina el mayor entre tres números enteros usando if/elif/else.
+
+    Se usa if/elif/else múltiple (no max()) porque el enunciado exige
+    explícitamente el uso de condicionales múltiples.
+
+    Args:
+        a (int): Primer número.
+        b (int): Segundo número.
+        c (int): Tercer número.
+
+    Returns:
+        int: El valor más alto de los tres.
+
+    Example:
+        >>> encontrar_mayor(3, 7, 5)
+        7
+        >>> encontrar_mayor(10, 10, 5)
+        10
+    """
+    if a >= b and a >= c:
+        return a
+    elif b >= a and b >= c:
+        return b
+    else:
+        return c
+
+
+def ejecutar_ejercicio_1() -> None:
+    """
+    Ejercicio 1: Solicita tres números y muestra el mayor.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 50)
+    print("  EJERCICIO 1 - Mayor de tres números")
+    print("=" * 50)
+
+    a = solicitar_entero("Introduce el primer número:  ")
+    b = solicitar_entero("Introduce el segundo número: ")
+    c = solicitar_entero("Introduce el tercer número:  ")
+
+    mayor = encontrar_mayor(a, b, c)
+    print(f"\n  → El mayor de {a}, {b} y {c} es: {mayor}")
+
+
+# =============================================================================
+# EJERCICIO 2 - Números positivos del 1 al N con for/while
+# =============================================================================
+
+def mostrar_positivos_hasta(limite: int) -> None:
+    """
+    Muestra todos los números desde 1 hasta `limite` si este es positivo.
+
+    Si el límite no es positivo, informa al usuario sin lanzar excepción,
+    ya que es un caso de uso válido pero sin resultado útil.
+
+    Usa for porque el rango es conocido de antemano (iteración determinista).
+
+    Args:
+        limite (int): Número hasta el que se mostrará la secuencia (inclusive).
+
+    Returns:
+        None
+
+    Example:
+        >>> mostrar_positivos_hasta(5)
+        1 2 3 4 5
+    """
+    if limite <= 0:
+        print(f"  ✗ El número {limite} no es positivo. No hay valores que mostrar.")
+        return
+
+    # Usamos end=" " para mostrar en línea y ahorrar espacio en consola
+    for i in range(1, limite + 1):
+        print(i, end=" ")
+    print()  # Salto de línea al finalizar
+
+
+def ejecutar_ejercicio_2() -> None:
+    """
+    Ejercicio 2: Solicita un número positivo y muestra del 1 hasta ese número.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 50)
+    print("  EJERCICIO 2 - Números del 1 al N")
+    print("=" * 50)
+
+    numero = solicitar_entero("Introduce un número positivo: ")
+    print(f"\n  → Números del 1 al {numero}:")
+    mostrar_positivos_hasta(numero)
+
+
+# =============================================================================
+# EJERCICIO 3 - Calculadora con dos números y una operación
+# =============================================================================
+
+OPERACIONES_VALIDAS = ("+", "-", "*", "/")
+
+
+def solicitar_operacion() -> str:
+    """
+    Solicita al usuario una operación aritmética válida.
+
+    Valida que la operación sea una de las permitidas (+, -, *, /)
+    para evitar procesar operadores no soportados.
+
+    Returns:
+        str: Operador aritmético válido.
+
+    Example:
+        >>> solicitar_operacion()
+        Operación (+, -, *, /): +
+        '+'
+    """
+    while True:
+        op = input(f"Operación {OPERACIONES_VALIDAS}: ").strip()
+        if op in OPERACIONES_VALIDAS:
+            return op
+        print(f"  ✗ Operación '{op}' no válida. Elige entre: {OPERACIONES_VALIDAS}")
+
+
+def calcular(a: float, b: float, operacion: str) -> float | None:
+    """
+    Realiza una operación aritmética entre dos números.
+
+    La división por cero se gestiona explícitamente para devolver None
+    en lugar de lanzar ZeroDivisionError, manteniendo el control en el llamador.
+
+    Args:
+        a (float): Operando izquierdo.
+        b (float): Operando derecho.
+        operacion (str): Operador aritmético (+, -, *, /).
+
+    Returns:
+        float | None: Resultado de la operación, o None si hay división por cero.
+
+    Example:
+        >>> calcular(10, 2, '/')
+        5.0
+        >>> calcular(10, 0, '/')
+        None
+    """
+    if operacion == "+":
+        return a + b
+    elif operacion == "-":
+        return a - b
+    elif operacion == "*":
+        return a * b
+    elif operacion == "/":
+        if b == 0:
+            # Devolvemos None en lugar de lanzar excepción para control limpio
+            print("  ✗ Error: División por cero no permitida.")
+            return None
+        return a / b
+
+
+def ejecutar_ejercicio_3() -> None:
+    """
+    Ejercicio 3: Calculadora básica con dos números y una operación.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 50)
+    print("  EJERCICIO 3 - Calculadora básica")
+    print("=" * 50)
+
+    a = solicitar_entero("Introduce el primer número:  ")
+    b = solicitar_entero("Introduce el segundo número: ")
+    operacion = solicitar_operacion()
+
+    resultado = calcular(a, b, operacion)
+
+    if resultado is not None:
+        print(f"\n  → {a} {operacion} {b} = {resultado}")
+
+
+# =============================================================================
+# EJERCICIO 4 - Código con errores corregido
+# =============================================================================
+
+def area_rectangulo(base: float, altura: float) -> float:
+    """
+    Calcula el área de un rectángulo.
+
+    Correcciones aplicadas al código original con errores:
+      1. El nombre de la función era 'area_rectangulo(base, altura)' sin tipo de retorno
+         y sin validación de parámetros.
+      2. 'area = base * altura' → correcto (no 'base ** altura' que elevaría a potencia).
+      3. Faltaba el 'return area' dentro de la función (estaba fuera con indentación errónea).
+      4. El input no convertía a float, causando TypeError al multiplicar strings.
+      5. La cadena del print tenía error de concatenación (usaba 'as' en lugar de '=').
+
+    Args:
+        base (float): La base del rectángulo (debe ser positiva).
+        altura (float): La altura del rectángulo (debe ser positiva).
+
+    Returns:
+        float: El área resultante (base × altura).
+
+    Raises:
+        ValueError: Si base o altura son valores negativos o cero.
+
+    Example:
+        >>> area_rectangulo(5, 3)
+        15.0
+    """
+    if base <= 0 or altura <= 0:
+        raise ValueError("La base y la altura deben ser valores positivos.")
+
+    # Multiplicación, NO potencia (**): el código original usaba base ** altura
+    area = base * altura
+    return area  # Return DENTRO de la función, no fuera
+
+
+def ejecutar_ejercicio_4() -> None:
+    """
+    Ejercicio 4: Versión corregida del código con errores de área de rectángulo.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 50)
+    print("  EJERCICIO 4 - Área de rectángulo (código corregido)")
+    print("=" * 50)
+
+    try:
+        # Input convertido a float (el original no lo hacía)
+        base = float(input("Introduce la base:    "))
+        altura = float(input("Introduce la altura:  "))
+        resultado = area_rectangulo(base, altura)
+        # f-string correcta (el original tenía concatenación rota)
+        print(f"\n  → El área es: {resultado}")
+    except ValueError as error:
+        print(f"  ✗ Error de valor: {error}")
+
+
+# =============================================================================
+# EJERCICIO 5 - Suma del 1 al 1.000.000: bucle vs sum()
+# =============================================================================
+
+def suma_con_bucle(limite: int) -> int:
+    """
+    Calcula la suma de todos los números del 1 al límite usando un bucle for.
+
+    Se implementa con bucle explícito para poder comparar el rendimiento
+    frente a la función built-in sum(), objetivo del ejercicio.
+
+    Args:
+        limite (int): Número hasta el que se suma (inclusive).
+
+    Returns:
+        int: Suma total de 1 + 2 + ... + limite.
+
+    Example:
+        >>> suma_con_bucle(5)
+        15
+    """
+    total = 0
+    for i in range(1, limite + 1):
+        total += i
+    return total
+
+
+def suma_con_builtin(limite: int) -> int:
+    """
+    Calcula la suma de todos los números del 1 al límite usando sum().
+
+    sum() está implementada en C internamente, por lo que es significativamente
+    más rápida que un bucle Python explícito para rangos grandes.
+
+    Args:
+        limite (int): Número hasta el que se suma (inclusive).
+
+    Returns:
+        int: Suma total de 1 + 2 + ... + limite.
+
+    Example:
+        >>> suma_con_builtin(5)
+        15
+    """
+    return sum(range(1, limite + 1))
+
+
+def medir_tiempo(funcion, *args) -> tuple:
+    """
+    Mide el tiempo de ejecución de una función dada.
+
+    Se usa time.time() en lugar de timeit para integrarlo de forma
+    sencilla en el flujo del programa sin necesidad de módulo externo.
+
+    Args:
+        funcion (callable): La función a medir.
+        *args: Argumentos que se pasarán a la función.
+
+    Returns:
+        tuple: (resultado, tiempo_en_segundos)
+    """
+    inicio = time.time()
+    resultado = funcion(*args)
+    fin = time.time()
+    return resultado, fin - inicio
+
+
+def ejecutar_ejercicio_5() -> None:
+    """
+    Ejercicio 5: Compara rendimiento entre bucle for y sum() para sumar 1 al 1.000.000.
+
+    Returns:
+        None
+    """
+    print("\n" + "=" * 50)
+    print("  EJERCICIO 5 - Rendimiento: bucle vs sum()")
+    print("=" * 50)
+
+    limite = 1_000_000  # Guión bajo para legibilidad (PEP 515)
+
+    resultado_bucle, tiempo_bucle = medir_tiempo(suma_con_bucle, limite)
+    resultado_builtin, tiempo_builtin = medir_tiempo(suma_con_builtin, limite)
+
+    print(f"\n  Suma 1 a {limite:,}:")
+    print(f"  {'Método':<20} {'Resultado':<20} {'Tiempo (s)'}")
+    print(f"  {'-'*55}")
+    print(f"  {'Bucle for':<20} {resultado_bucle:<20} {tiempo_bucle:.6f}")
+    print(f"  {'sum(range(...))':<20} {resultado_builtin:<20} {tiempo_builtin:.6f}")
+
+    diferencia = tiempo_bucle / tiempo_builtin if tiempo_builtin > 0 else float("inf")
+    print(f"\n  → sum() es aprox. {diferencia:.1f}x más rápido que el bucle for.")
+
+
+# =============================================================================
+# PUNTO DE ENTRADA
+# =============================================================================
+
+if __name__ == "__main__":
+    """
+    Ejecuta todos los ejercicios de la Unidad 3 en secuencia.
+    """
+    ejecutar_ejercicio_1()
+    ejecutar_ejercicio_2()
+    ejecutar_ejercicio_3()
+    ejecutar_ejercicio_4()
+    ejecutar_ejercicio_5()
