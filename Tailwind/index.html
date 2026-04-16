@@ -1,11 +1,46 @@
+<!--
+  @file        index.html
+  @description Tarjeta de perfil interactiva construida con Tailwind CSS.
+               Incluye avatar circular, datos personales, iconos de redes
+               sociales y un botón animado. No requiere compilación ni
+               herramientas externas: usa Tailwind vía CDN.
+  @author      Carlos Vico
+  @version     1.0.0
+  @date        2026-04-16
+
+  @requires    Tailwind CSS  https://cdn.tailwindcss.com
+  @requires    Font Awesome  https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
+  @requires    DiceBear API  https://api.dicebear.com  (avatar SVG generado dinámicamente)
+
+  @tareas
+    Tarea 1 — Centrado de tarjeta con Flexbox en <body>
+    Tarea 2 — Estilos base de tarjeta: fondo, bordes redondeados y sombra
+    Tarea 3 — Imagen de perfil circular con borde decorativo
+    Tarea 4 — Tipografía diferenciada: nombre en negrita, descripción en gris
+    Tarea 5 — Botón con color primario y efecto hover
+    Tarea 6 — Animación personalizada (keyframe), iconos externos (Font Awesome)
+               y efectos de transición en tarjeta y enlaces
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Carlos Vico">
+  <meta name="description" content="Tarjeta de perfil interactiva — ejercicio Tailwind CSS">
   <title>Tarjeta de perfil</title>
+
+  <!-- Tailwind CSS via CDN (no requiere instalación ni compilación) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome para iconos -->
+
+  <!-- Font Awesome 6 — iconos de UI y redes sociales -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!--
+    Configuración de Tailwind: extensión del tema con una animación personalizada.
+    @keyframe pulse_btn — escala el botón entre 1× y 1.08× de forma continua,
+    creando un efecto de latido que atrae la atención del usuario sin resultar intrusivo.
+  -->
   <script>
     tailwind.config = {
       theme: {
@@ -13,10 +48,11 @@
           keyframes: {
             pulse_btn: {
               '0%, 100%': { transform: 'scale(1)' },
-              '50%': { transform: 'scale(1.08)' },
+              '50%':       { transform: 'scale(1.08)' },
             }
           },
           animation: {
+            /* Nombre de clase resultante: animate-pulse_btn */
             pulse_btn: 'pulse_btn 1.5s ease-in-out infinite',
           }
         }
@@ -25,57 +61,105 @@
   </script>
 </head>
 
-<!-- Tarea 1: Centrar la tarjeta en la pantalla -->
+<!--
+  [Tarea 1] Centrado de la tarjeta en pantalla completa.
+  - min-h-screen        → el body ocupa al menos el 100% de la ventana
+  - flex + items-center + justify-center → centra el hijo (tarjeta) en ambos ejes
+  - bg-gradient-to-br   → fondo degradado desde slate-100 (gris claro) hacia blue-50
+  - p-6                 → padding de seguridad para pantallas pequeñas
+-->
 <body class="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center p-6">
 
   <!--
-    Tarea 1: flex items-center justify-center en body → tarjeta centrada
-    Tarea 2: bg-white, rounded-2xl, shadow-lg → fondo claro, bordes redondeados, sombra suave
-    Tarea extra: hover:shadow-2xl transition-shadow → efecto hover en la tarjeta (tarea 6)
+    [Tarea 2] Contenedor principal de la tarjeta.
+    - bg-white           → fondo blanco que contrasta con el degradado exterior
+    - rounded-2xl        → esquinas muy redondeadas (border-radius: 1rem)
+    - shadow-lg          → sombra suave en reposo
+    - hover:shadow-2xl   → [Tarea 6] sombra más pronunciada al pasar el cursor
+    - transition-shadow  → anima el cambio de sombra con duración de 300 ms
+    - p-8                → padding interior generoso
+    - w-80               → ancho fijo de 320 px
+    - flex flex-col items-center text-center → columna centrada horizontalmente
   -->
   <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-8 w-80 flex flex-col items-center text-center">
 
-    <!-- Tarea 3: imagen redondeada completamente (rounded-full) y tamaño ajustado (w-28 h-28) -->
+    <!--
+      [Tarea 3] Avatar de perfil.
+      - src: avatar SVG generado por DiceBear (estilo "adventurer", semilla "Carlos")
+      - w-28 h-28        → dimensiones fijas de 112 × 112 px
+      - rounded-full     → imagen completamente circular
+      - object-cover     → recorta el SVG sin distorsión
+      - border-4 border-blue-200 → aro azul claro decorativo
+      - shadow-md        → sombra ligera para profundidad
+      - mb-4             → margen inferior de separación
+    -->
     <img
       src="https://api.dicebear.com/7.x/adventurer/svg?seed=Carlos"
       alt="Foto de perfil de Carlos"
       class="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow-md mb-4"
     >
 
-    <!-- Tarea 4: nombre más grande (text-2xl font-bold) -->
+    <!--
+      [Tarea 4] Nombre del perfil.
+      - text-2xl font-bold → tamaño grande y peso 700 para jerarquía visual
+      - text-gray-800      → gris muy oscuro (casi negro) para máxima legibilidad
+    -->
     <h2 class="text-2xl font-bold text-gray-800 mb-1">
       Carlos Vico
     </h2>
 
-    <!-- Iconos de rol (Tarea 6: iconos externos) -->
+    <!--
+      [Tarea 6] Rol con icono externo (Font Awesome).
+      - fa-solid fa-code   → icono de código que refuerza visualmente el rol
+      - text-blue-500      → color primario de la tarjeta
+      - flex items-center gap-1 → alinea icono y texto en línea con separación mínima
+    -->
     <p class="text-blue-500 text-sm font-medium mb-2 flex items-center gap-1">
       <i class="fa-solid fa-code"></i>
       Desarrollador Web
     </p>
 
-    <!-- Tarea 4: color gris para la descripción -->
+    <!--
+      [Tarea 4] Descripción biográfica breve.
+      - text-gray-400      → gris claro que establece jerarquía tipográfica secundaria
+      - text-sm            → tamaño reducido respecto al nombre
+      - leading-relaxed    → interlineado amplio para mejorar la legibilidad
+    -->
     <p class="text-gray-400 text-sm mb-6 leading-relaxed">
       Apasionado del desarrollo web y el diseño de interfaces.
       Siempre aprendiendo tecnologías nuevas.
     </p>
 
-    <!-- Iconos de redes sociales (Tarea 6) -->
+    <!--
+      [Tarea 6] Iconos de redes sociales con transición de color en hover.
+      Cada enlace parte de text-gray-400 (neutro) y vira a su color de marca al hover:
+      - GitHub    → blue-500
+      - LinkedIn  → sky-500
+      - Instagram → pink-500
+      La clase transition-colors anima el cambio de color en 200 ms.
+    -->
     <div class="flex gap-4 mb-6 text-gray-400">
-      <a href="#" class="hover:text-blue-500 transition-colors duration-200 text-lg">
+      <a href="#" aria-label="GitHub" class="hover:text-blue-500 transition-colors duration-200 text-lg">
         <i class="fa-brands fa-github"></i>
       </a>
-      <a href="#" class="hover:text-sky-500 transition-colors duration-200 text-lg">
+      <a href="#" aria-label="LinkedIn" class="hover:text-sky-500 transition-colors duration-200 text-lg">
         <i class="fa-brands fa-linkedin"></i>
       </a>
-      <a href="#" class="hover:text-pink-500 transition-colors duration-200 text-lg">
+      <a href="#" aria-label="Instagram" class="hover:text-pink-500 transition-colors duration-200 text-lg">
         <i class="fa-brands fa-instagram"></i>
       </a>
     </div>
 
     <!--
-      Tarea 5: color de fondo atractivo (bg-blue-500), hover (hover:bg-blue-700),
-               texto en blanco (text-white)
-      Tarea 6: animación al botón (animate-pulse_btn), transition y scale
+      [Tarea 5 + 6] Botón de acción principal.
+      - animate-pulse_btn  → [Tarea 6] aplica el keyframe personalizado definido arriba
+      - bg-blue-500        → [Tarea 5] color primario de fondo
+      - hover:bg-blue-700  → [Tarea 5] tono más oscuro al pasar el cursor
+      - text-white         → [Tarea 5] texto en blanco para contraste óptimo
+      - rounded-full       → botón tipo "pill" (completamente redondeado)
+      - transition-colors  → anima el cambio de color en 200 ms
+      - shadow-md hover:shadow-lg → profundidad visual que aumenta en hover
+      - flex items-center gap-2   → alinea icono y texto dentro del botón
     -->
     <button
       class="animate-pulse_btn bg-blue-500 hover:bg-blue-700 text-white font-semibold
