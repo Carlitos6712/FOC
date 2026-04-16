@@ -16,6 +16,7 @@
 - [Unidad 3 — Estructuras de control](#unidad-3--estructuras-de-control)
 - [Unidad 4 — Estructuras de datos](#unidad-4--estructuras-de-datos)
 - [Unidad 5 — POO y bases de datos](#unidad-5--poo-y-bases-de-datos)
+- [Unidad 6 — Generadores, iteradores y cierres](#unidad-6--generadores-iteradores-y-cierres)
 - [Convenciones de código](#convenciones-de-código)
 
 ---
@@ -31,11 +32,18 @@ Repositorio de tareas individuales del curso de Python, organizado por unidades 
 ```
 📦 ejercicios-python/
 ├── 📄 README.md
-├── 📄 unidad2_algoritmos.py
-├── 📄 unidad3_estructuras_control.py
-├── 📄 unidad4_estructuras_datos.py
-└── 📄 unidad5_poo_bases_datos.py
-    └── 🗄️  tienda.db              ← generado automáticamente al ejecutar la Unidad 5
+├── 📂 U2-algoritmos/
+│   └── 📄 unidad2_algoritmos.py
+├── 📂 U3-estructurasDeControl/
+│   └── 📄 unidad3_estructuras_control.py
+├── 📂 U4-estructuraDeDatos/
+│   └── 📄 unidad4_estructuras_datos.py
+├── 📂 U5-POO/
+│   ├── 📄 unidad5_poo_bases_datos.py
+│   └── 🗄️  tienda.db              ← generado automáticamente al ejecutar la Unidad 5
+└── 📂 U6-generadores-iteradores-cierres/
+    ├── 📄 OPT06_Carlos-Vico.py
+    └── 📄 README.md
 ```
 
 ---
@@ -59,13 +67,14 @@ python --version
 Cada archivo se ejecuta de forma independiente:
 
 ```bash
-python unidad2_algoritmos.py
-python unidad3_estructuras_control.py
-python unidad4_estructuras_datos.py
-python unidad5_poo_bases_datos.py
+python U2-algoritmos/unidad2_algoritmos.py
+python U3-estructurasDeControl/unidad3_estructuras_control.py
+python U4-estructuraDeDatos/unidad4_estructuras_datos.py
+python U5-POO/unidad5_poo_bases_datos.py
+python U6-generadores-iteradores-cierres/OPT06_Carlos-Vico.py
 ```
 
-> **Nota:** La Unidad 3 y la Unidad 2 solicitan entrada por teclado en algunos ejercicios. Las unidades 4 y 5 son completamente automáticas.
+> **Nota:** La Unidad 2 y la Unidad 3 solicitan entrada por teclado en algunos ejercicios. Las unidades 4, 5 y 6 son completamente automáticas.
 
 ---
 
@@ -262,6 +271,55 @@ GestorBD                        (gestión CRUD independiente de Producto)
   1     Manzana              1.20€    Alimenticio     2026-06-30
   2     Leche                0.99€    Alimenticio     2026-02-15
   3     Yogur                0.80€    Alimenticio     2026-08-10
+```
+
+---
+
+## Unidad 6 — Generadores, iteradores y cierres
+
+**Archivo:** `U6-generadores-iteradores-cierres/OPT06_Carlos-Vico.py`  
+**Tarea:** OPT6
+
+### Ejercicios
+
+| # | Descripción | Concepto |
+|---|-------------|----------|
+| 1 | `numeros_suerte(limite)` — genera enteros del 1 al límite | `yield`, generador |
+| 2 | Iterar el generador e imprimir cada valor | `for` sobre generador |
+| 3 | `numeros_suerte_pares(limite)` — filtra solo los pares | `yield` condicional, `n % 2 == 0` |
+
+### Funciones principales
+
+```python
+numeros_suerte(limite: int)        -> Generator[int, None, None]
+numeros_suerte_pares(limite: int)  -> Generator[int, None, None]
+```
+
+### `yield` vs `return`
+
+| | `return` | `yield` |
+|---|---|---|
+| Finaliza la función | Sí | No (suspende) |
+| Puede usarse varias veces | No | Sí |
+| Coste de memoria | O(n) — lista completa | O(1) — un valor a la vez |
+
+### Ejemplo de salida
+
+```
+========================================
+  Numeros de la suerte (1 - 5)
+========================================
+  Numero de la suerte: 1
+  Numero de la suerte: 2
+  Numero de la suerte: 3
+  Numero de la suerte: 4
+  Numero de la suerte: 5
+
+========================================
+  Numeros de la suerte PARES (1 - 5)
+========================================
+  Numero par de la suerte: 2
+  Numero par de la suerte: 4
 ```
 
 ---
