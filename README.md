@@ -43,12 +43,14 @@
 | `unidad3_estructuras_control.py` | U3 | `if/elif/else`, bucles, calculadora, benchmark |
 | `unidad4_estructuras_datos.py` | U4 | Listas, diccionarios, tuplas, estructuras anidadas |
 | `unidad5_poo_bases_datos.py` | U5 | POO (herencia, encapsulamiento), CRUD con SQLite3 |
+| `OPT06_Carlos-Vico.py` | U6 | Generadores con `yield`, iteradores, filtrado de pares |
 
 **Convenciones:** `snake_case`, docstrings completos, funciones < 30 líneas, sin `except: pass`.
 
 ```bash
-python unidad2_algoritmos.py
-python unidad5_poo_bases_datos.py   # genera tienda.db automáticamente
+python U2-algoritmos/unidad2_algoritmos.py
+python U5-POO/unidad5_poo_bases_datos.py          # genera tienda.db automáticamente
+python U6-generadores-iteradores-cierres/OPT06_Carlos-Vico.py
 ```
 
 ---
