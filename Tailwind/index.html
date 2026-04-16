@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tarjeta de perfil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          keyframes: {
+            pulse_btn: {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.08)' },
+            }
+          },
+          animation: {
+            pulse_btn: 'pulse_btn 1.5s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<!-- Tarea 1: Centrar la tarjeta en la pantalla -->
+<body class="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center p-6">
+
+  <!--
+    Tarea 1: flex items-center justify-center en body → tarjeta centrada
+    Tarea 2: bg-white, rounded-2xl, shadow-lg → fondo claro, bordes redondeados, sombra suave
+    Tarea extra: hover:shadow-2xl transition-shadow → efecto hover en la tarjeta (tarea 6)
+  -->
+  <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-8 w-80 flex flex-col items-center text-center">
+
+    <!-- Tarea 3: imagen redondeada completamente (rounded-full) y tamaño ajustado (w-28 h-28) -->
+    <img
+      src="https://api.dicebear.com/7.x/adventurer/svg?seed=Carlos"
+      alt="Foto de perfil de Carlos"
+      class="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow-md mb-4"
+    >
+
+    <!-- Tarea 4: nombre más grande (text-2xl font-bold) -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-1">
+      Carlos Vico
+    </h2>
+
+    <!-- Iconos de rol (Tarea 6: iconos externos) -->
+    <p class="text-blue-500 text-sm font-medium mb-2 flex items-center gap-1">
+      <i class="fa-solid fa-code"></i>
+      Desarrollador Web
+    </p>
+
+    <!-- Tarea 4: color gris para la descripción -->
+    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+      Apasionado del desarrollo web y el diseño de interfaces.
+      Siempre aprendiendo tecnologías nuevas.
+    </p>
+
+    <!-- Iconos de redes sociales (Tarea 6) -->
+    <div class="flex gap-4 mb-6 text-gray-400">
+      <a href="#" class="hover:text-blue-500 transition-colors duration-200 text-lg">
+        <i class="fa-brands fa-github"></i>
+      </a>
+      <a href="#" class="hover:text-sky-500 transition-colors duration-200 text-lg">
+        <i class="fa-brands fa-linkedin"></i>
+      </a>
+      <a href="#" class="hover:text-pink-500 transition-colors duration-200 text-lg">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+    </div>
+
+    <!--
+      Tarea 5: color de fondo atractivo (bg-blue-500), hover (hover:bg-blue-700),
+               texto en blanco (text-white)
+      Tarea 6: animación al botón (animate-pulse_btn), transition y scale
+    -->
+    <button
+      class="animate-pulse_btn bg-blue-500 hover:bg-blue-700 text-white font-semibold
+             py-2 px-8 rounded-full transition-colors duration-200 flex items-center gap-2
+             shadow-md hover:shadow-lg cursor-pointer"
+    >
+      <i class="fa-solid fa-user-plus text-sm"></i>
+      Seguir
+    </button>
+
+  </div>
+
+</body>
+</html>
