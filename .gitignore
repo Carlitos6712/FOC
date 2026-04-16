@@ -1,6 +1,12 @@
 # .gitignore Universal: PHP (Laravel/Symfony), Python (Django/Flask), JS/TS, Java y SO.
  
 # ==========================================
+# 0. KUBERNETES
+# ==========================================
+Kubernetes/generate_pdf.py
+Kubernetes/*.pdf
+
+# ==========================================
 # 1. SECRETOS Y CREDENCIALES (CRÍTICO)
 # ==========================================
 # Nunca incluyas secretos/passwords en el código.
