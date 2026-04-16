@@ -1,0 +1,162 @@
+# =============================================================================
+# @file        deployment.yaml
+# @description Despliegue básico de Apache HTTP Server (httpd:2.4) en Kubernetes.
+#              Define un Deployment que mantiene 2 réplicas del servidor web.
+#              El controlador reconcilia el estado continuamente: si un Pod
+#              falla o un nodo cae, Kubernetes crea uno nuevo de forma automática.
+#
+# @author      Carlos Vico
+# @date        2026-04-16
+# @version     1.0.0
+#
+# @requires    Kubernetes >= 1.19  (API apps/v1 estable desde 1.9)
+# @requires    kubectl             (CLI para interactuar con el clúster)
+# @requires    Minikube            (clúster local recomendado para desarrollo)
+#
+# @usage
+#   Aplicar / actualizar el despliegue:
+#     kubectl apply -f deployment.yaml
+#
+#   Verificar el estado:
+#     kubectl get deployments
+#     kubectl get pods
+#     kubectl describe deployment apache-deployment
+#
+#   Ver logs de un Pod:
+#     kubectl logs <nombre-del-pod>
+#
+#   Eliminar todos los recursos definidos en este fichero:
+#     kubectl delete -f deployment.yaml
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# apiVersion
+# Grupo de API de Kubernetes que gestiona este tipo de recurso.
+# "apps/v1" contiene los controladores de carga de trabajo:
+#   Deployment, ReplicaSet, StatefulSet, DaemonSet, etc.
+# Estable (GA) desde Kubernetes 1.9.
+# -----------------------------------------------------------------------------
+apiVersion: apps/v1
+
+# -----------------------------------------------------------------------------
+# kind
+# Tipo de objeto que se va a crear. Un Deployment gestiona un conjunto de
+# Pods idénticos (ReplicaSet) y permite actualizaciones sin interrupciones
+# (rolling update) y rollback automático si la nueva versión falla.
+# -----------------------------------------------------------------------------
+kind: Deployment
+
+# -----------------------------------------------------------------------------
+# metadata
+# Información de identificación del recurso dentro del clúster.
+# -----------------------------------------------------------------------------
+metadata:
+  # Nombre único del Deployment en el namespace (por defecto: "default").
+  # Se usa en todos los comandos kubectl para referenciar este objeto.
+  name: apache-deployment
+
+  labels:
+    # Etiqueta clave-valor para clasificar y filtrar recursos.
+    # Permite agrupar todos los objetos relacionados con Apache
+    # (Deployment, Service, Ingress, etc.) bajo la misma etiqueta.
+    app: apache
+
+# -----------------------------------------------------------------------------
+# spec
+# Estado deseado del Deployment. El controlador compara este estado con el
+# estado real del clúster y toma acciones para reconciliarlos.
+# -----------------------------------------------------------------------------
+spec:
+
+  # ---------------------------------------------------------------------------
+  # replicas
+  # Número de Pods idénticos que Kubernetes debe mantener activos en todo
+  # momento. El controlador de ReplicaSet monitoriza continuamente el estado:
+  #   - Si hay menos Pods de los indicados → crea los que faltan.
+  #   - Si hay más Pods de los indicados   → elimina los sobrantes.
+  # Aumentar este valor escala la aplicación horizontalmente.
+  # ---------------------------------------------------------------------------
+  replicas: 2
+
+  # ---------------------------------------------------------------------------
+  # selector
+  # Define qué Pods pertenecen a este Deployment.
+  # El Deployment buscará y gestionará todos los Pods cuyas etiquetas
+  # coincidan con matchLabels. DEBE ser igual a template.metadata.labels;
+  # de lo contrario Kubernetes rechaza el manifiesto.
+  # ---------------------------------------------------------------------------
+  selector:
+    matchLabels:
+      app: apache   # Enlaza el Deployment con los Pods etiquetados app=apache
+
+  # ---------------------------------------------------------------------------
+  # strategy (usa el valor por defecto: RollingUpdate)
+  # Política de actualización cuando se cambia la imagen u otra propiedad.
+  #   RollingUpdate (por defecto): sustituye Pods de forma gradual, sin downtime.
+  #   Recreate:                    destruye todos los Pods antes de crear nuevos.
+  # ---------------------------------------------------------------------------
+  # strategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxSurge: 1          # Pods extra permitidos durante la actualización
+  #     maxUnavailable: 0    # Pods que pueden estar no disponibles durante la actualización
+
+  # ---------------------------------------------------------------------------
+  # template
+  # Plantilla que Kubernetes usa para crear cada Pod.
+  # Cada Pod generado a partir de esta plantilla es idéntico.
+  # ---------------------------------------------------------------------------
+  template:
+
+    metadata:
+      labels:
+        # Debe coincidir exactamente con selector.matchLabels.
+        # Estas etiquetas son las que el Deployment usa para localizar
+        # sus Pods y las que un Service usará para enrutar tráfico.
+        app: apache
+
+    spec:
+      # -----------------------------------------------------------------------
+      # containers
+      # Lista de contenedores que correrán dentro de cada Pod.
+      # Todos los contenedores de un Pod comparten la misma red (IP y puertos)
+      # y pueden comunicarse entre sí por localhost.
+      # -----------------------------------------------------------------------
+      containers:
+
+        - name: apache          # Nombre del contenedor dentro del Pod.
+                                # Usado en kubectl logs / exec para referenciarlo.
+
+          image: httpd:2.4      # Imagen oficial de Apache HTTP Server 2.4
+                                # descargada de Docker Hub.
+                                # En producción se recomienda fijar el digest:
+                                #   httpd@sha256:<hash>
+
+          ports:
+            - containerPort: 80 # Puerto que expone el proceso Apache dentro
+                                # del contenedor. No lo publica en el host;
+                                # para eso se necesita un Service de tipo
+                                # NodePort o LoadBalancer.
+
+          # -------------------------------------------------------------------
+          # resources
+          # Solicitudes y límites de CPU y memoria para el contenedor.
+          #
+          # requests: recursos MÍNIMOS garantizados por el scheduler.
+          #   El Pod sólo se ubica en un nodo que pueda satisfacerlos.
+          #
+          # limits: recursos MÁXIMOS que puede consumir el contenedor.
+          #   Si supera el límite de memoria → el proceso es terminado (OOMKilled).
+          #   Si supera el límite de CPU     → se aplica throttling (no se mata).
+          #
+          # Unidades:
+          #   Mi  = Mebibytes (1 Mi = 1 048 576 bytes)
+          #   m   = millicores de CPU (1000m = 1 vCPU completa)
+          # -------------------------------------------------------------------
+          resources:
+            requests:
+              memory: "64Mi"    # 64 MiB garantizados al arrancar Apache
+              cpu: "100m"       # 0.1 vCPU garantizada (suficiente en reposo)
+            limits:
+              memory: "128Mi"   # Apache no podrá superar 128 MiB de RAM
+              cpu: "200m"       # Throttling si supera 0.2 vCPU

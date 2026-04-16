@@ -22,6 +22,7 @@
 ├── 📂 Node.js/           → Ejercicios con Node.js + Express
 ├── 📂 Symfony/           → Ejercicios con Symfony 6.4 LTS
 ├── 📂 Tailwind/          → Tarjeta de perfil con Tailwind CSS
+├── 📂 Kubernetes/        → Despliegue básico de Apache con Kubernetes
 ├── 📄 .gitignore
 ├── 📄 LICENSE
 └── 📄 README.md
@@ -194,6 +195,28 @@ python manage.py runserver
 
 ---
 
+### ☸️ Kubernetes — Despliegue básico de Apache
+
+**Ruta:** `Kubernetes/`  
+**Stack:** Kubernetes 1.19+ · Minikube · kubectl · Apache httpd:2.4
+
+Despliegue declarativo de 2 réplicas de Apache HTTP Server usando un único manifiesto YAML. Kubernetes garantiza alta disponibilidad: si un Pod falla, el controlador lo recrea automáticamente.
+
+| Archivo | Descripción |
+|---|---|
+| `deployment.yaml` | Manifiesto con Deployment, selector, réplicas y límites de recursos |
+| `generate_pdf.py` | Script Python que genera el PDF de la actividad (fpdf2) |
+| `DAW00_Actividad_CarlosVico.pdf` | Memoria entregada con explicación y capturas |
+
+```bash
+minikube start
+kubectl apply -f deployment.yaml
+kubectl get pods        # Esperar STATUS = Running en los 2 Pods
+kubectl delete -f deployment.yaml
+```
+
+---
+
 ### 🎨 Tailwind CSS — Tarjeta de Perfil
 
 **Ruta:** `Tailwind/`  
@@ -263,6 +286,8 @@ node libros-api.js
 | Twig / Blade | — | Motores de plantillas |
 | Tailwind CSS | CDN 3.x | Framework CSS utilitario |
 | Font Awesome | 6.5 | Iconografía |
+| Kubernetes | 1.19+ | Orquestación de contenedores |
+| Minikube | — | Clúster local para desarrollo |
 
 ---
 
