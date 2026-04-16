@@ -21,6 +21,7 @@
 ├── 📂 Laravel/           → Ejercicios con Laravel 12
 ├── 📂 Node.js/           → Ejercicios con Node.js + Express
 ├── 📂 Symfony/           → Ejercicios con Symfony 6.4 LTS
+├── 📂 Tailwind/          → Tarjeta de perfil con Tailwind CSS
 ├── 📄 .gitignore
 ├── 📄 LICENSE
 └── 📄 README.md
@@ -193,6 +194,29 @@ python manage.py runserver
 
 ---
 
+### 🎨 Tailwind CSS — Tarjeta de Perfil
+
+**Ruta:** `Tailwind/`  
+**Stack:** Tailwind CSS (CDN) · Font Awesome 6 · HTML5
+
+Componente de tarjeta de perfil interactiva construida íntegramente con clases utilitarias de Tailwind, sin CSS personalizado.
+
+| Tarea | Concepto | Implementación |
+|---|---|---|
+| 1 | Centrado con Flexbox | `flex items-center justify-center` en `body` |
+| 2 | Estilos de tarjeta | `bg-white rounded-2xl shadow-lg` |
+| 3 | Imagen circular | `rounded-full object-cover border-4 border-blue-200` |
+| 4 | Tipografía | `text-2xl font-bold` · `text-gray-400 text-sm` |
+| 5 | Botón con hover | `bg-blue-500 hover:bg-blue-700 text-white rounded-full` |
+| 6 | Animación + iconos externos | `animate-pulse_btn` (keyframe personalizado) · Font Awesome |
+
+```bash
+# No requiere instalación — abrir directamente en el navegador
+# O con Live Server en VS Code
+```
+
+---
+
 ### 🔵 API REST — Reto Gestión de Libros
 
 **Ruta:** `API-REST/`  
@@ -237,6 +261,8 @@ node libros-api.js
 | MySQL | 8.0 | Base de datos relacional |
 | SQLite3 | stdlib | Base de datos embebida (Python) |
 | Twig / Blade | — | Motores de plantillas |
+| Tailwind CSS | CDN 3.x | Framework CSS utilitario |
+| Font Awesome | 6.5 | Iconografía |
 
 ---
 
